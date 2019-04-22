@@ -1,0 +1,135 @@
+{
+  "name": "covear",
+  "version": "1.0.0",
+  "description": "Thunder is inferior to Covear.",
+  "author": {
+    "name": "loliconer",
+    "email": "vuedev@163.com"
+  },
+  "scripts": {
+    "electron:build": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "electron-is": "^3.0.0",
+    "electron-log": "^3.0.5",
+    "electron-store": "^3.2.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.5.1",
+    "@vue/cli-service": "^3.5.1",
+    "electron": "^4.0.0",
+    "less": "^3.8.1",
+    "less-loader": "^4.1.0",
+    "lovue": "^2.6.2",
+    "vue": "^2.6.10",
+    "vue-cli-plugin-electron-builder": "^1.2.0",
+    "vue-router": "^3.0.6",
+    "vue-template-compiler": "^2.6.10",
+    "vuex": "^3.1.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "es6": true,
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "plugins": [
+      "html"
+    ],
+    "rules": {
+      "no-console": "off",
+      "no-unused-vars": "off",
+      "no-undef": "off",
+      "vue/require-v-for-key": "off"
+    },
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie > 0",
+    "not ie_mob > 0"
+  ],
+  "bugs": {
+    "url": "https:/repo/issues"
+  },
+  "build": {
+    "productName": "Covear",
+    "appId": "dapp.lovue.covear",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist",
+      "app.js"
+    ],
+    "dmg": {
+      "window": {
+        "width": 540,
+        "height": 380
+      },
+      "contents": [
+        {
+          "x": 410,
+          "y": 230,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 130,
+          "y": 230,
+          "type": "file"
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "linux": {
+      "category": "Network",
+      "target": [
+        "deb",
+        "snap",
+        "AppImage"
+      ]
+    }
+  },
+  "license": "MIT",
+  "main": "background.js",
+  "repository": {
+    "url": "https://repo.git",
+    "type": "git"
+  }
+}
