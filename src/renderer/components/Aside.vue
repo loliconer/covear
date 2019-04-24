@@ -1,32 +1,48 @@
 <template>
   <aside class="cv-aside">
-    <div class="a-menu">
+    <div class="a-menu top">
       <router-link class="m-item" to="/task"><v-icon icon="cv-task"></v-icon></router-link>
-      <div class="m-item"><v-icon icon="cv-add"></v-icon></div>
+      <div class="m-item" @click="showAddTaskPanel"><v-icon icon="cv-add"></v-icon></div>
     </div>
 
-    <div class="a-menu">
+    <div class="a-menu bottom">
       <router-link class="m-item" to="/preference"><v-icon icon="cv-preference"></v-icon></router-link>
       <div class="m-item" @click="showAboutPanel"><v-icon icon="cv-about"></v-icon></div>
     </div>
 
     <v-popup v-model="isShowAboutPanel">
+      <panel-about></panel-about>
+    </v-popup>
 
+    <v-popup v-model="isShowAddTaskPanel" no-footer fixed>
+      <panel-add-task @close="isShowAddTaskPanel = false"></panel-add-task>
     </v-popup>
   </aside>
 </template>
 
 <script>
+  import About from './About'
+  import AddTask from './AddTask'
+
   export default {
     name: 'cv-aside',
     data() {
       return {
-        isShowAboutPanel: false
+        isShowAboutPanel: false,
+        isShowAddTaskPanel: false
       }
     },
+    components: {
+      'panel-about': About,
+      'panel-add-task': AddTask
+    },
     methods: {
-      showAboutPanel() {
+      async showAboutPanel() {
+        // this.engineVersion = await engine.getVersion()
         this.isShowAboutPanel = true
+      },
+      showAddTaskPanel() {
+        this.isShowAddTaskPanel = true
       }
     }
   }

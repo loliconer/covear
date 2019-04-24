@@ -14,7 +14,7 @@ class ReplaceVendorsPlugin {
 }
 
 module.exports = {
-  publicPath: '.',
+  // publicPath: '.',
   css: {
     loaderOptions: {
       less: {

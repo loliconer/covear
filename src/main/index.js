@@ -1,4 +1,4 @@
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import is from 'electron-is'
 import {
   createProtocol,
@@ -23,7 +23,7 @@ function createWindow () {
     width: 800,
     height: 600,
     titleBarStyle: 'hiddenInset' })
-  win.setMenu(null)
+  // win.setMenu(null)
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
@@ -62,6 +62,12 @@ app.on('ready', async () => {
     }
   }
   global.configManager = new ConfigManager()
+  ipcMain.on('command', (event, command, ...args) => {
+    if (command === 'application:relaunch') {
+      app.relaunch()
+      app.exit()
+    }
+  })
   createWindow()
 })
 

@@ -1,0 +1,140 @@
+@import (reference) "../Mixins";
+
+.page-preference {
+  display: flex;
+
+  .p-aside {
+    min-height: 100vh;
+    padding: 40px var(--2unit) 0;
+    user-select: none;
+    background-color: #F4F5F7;
+
+    h3 {
+      font-size: var(--normal-font);
+      font-weight: normal;
+      line-height: var(--3unit);
+      margin: 0 0 var(--3unit);
+    }
+
+    .a-menu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .m-item {
+      width: 160px;
+      cursor: pointer;
+      transition: background-color 0.25s;
+      margin-bottom: var(--unit);
+      font-size: var(--small-font);
+      padding: var(--unit);
+      border-radius: var(--border-radius);
+
+      .icon {
+        margin-right: 12px;
+      }
+
+      &:hover, &.focus {
+        background-color: #EAECF0;
+      }
+    }
+  }
+
+  .p-container {
+    flex: 1;
+    padding: var(--4unit);
+
+    h4 {
+      margin: 0;
+      padding: var(--unit) 0;
+      font-weight: normal;
+      .mixin-border-bottom;
+    }
+
+    .pf-content {
+      padding: var(--2unit) 0;
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      grid-row-gap: var(--3unit);
+
+      .label {
+        font-size: var(--small-font);
+        display: flex;
+        align-items: center;
+
+        &.l-start {
+          align-items: flex-start;
+          margin-top: var(--unit);
+        }
+      }
+
+      .controls {
+        .c-row {
+          .flex-start;
+          margin-bottom: var(--2unit);
+
+          > span {
+            font-size: var(--small-font);
+            margin-right: var(--unit);
+          }
+        }
+      }
+    }
+
+    .pf-bottom {
+      position: absolute;
+      bottom: var(--2unit);
+    }
+  }
+
+  .pf-advanced {
+    .pf-content {
+      .label.l-start {
+        margin-top: 0;
+      }
+    }
+
+    .cell-proxy {
+      .v-switch {
+        font-size: 0;
+
+        > span {
+          margin-left: 6px;
+        }
+      }
+
+      .c-row {
+        .flex-start;
+        margin-bottom: var(--2unit);
+
+        > span {
+          font-size: var(--small-font);
+        }
+
+        .v-input {
+          width: 100%;
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    .cell-dev {
+      .c-row {
+        margin-bottom: var(--2unit);
+
+        .r-label {
+          font-size: var(--small-font);
+          margin-bottom: var(--unit);
+        }
+
+        .v-input {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

@@ -27,12 +27,147 @@
       }
     }
 
-    &:first-of-type {
+    &.top {
       flex: 1;
     }
 
-    &:last-of-type {
+    &.bottom {
       margin-bottom: 24px;
+    }
+  }
+}
+
+.cv-upload {
+  position: relative;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--3unit) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: border-color .2s;
+
+  .u-tip {
+    font-size: var(--small-font);
+    margin-top: var(--2unit);
+  }
+
+  input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    font-size: 0;
+    cursor: pointer;
+  }
+
+  &:hover {
+    border-color: var(--hover-blue);
+  }
+}
+
+.cv-select-dir {
+  display: flex;
+
+  .v-input {
+    flex: 1;
+
+    .input {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  .v-btn {
+    background-color: var(--bg-color);
+    color: var(--main-color);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+
+    &:hover {
+      background-color: var(--bg-color);
+    }
+  }
+}
+
+.app-copyright {
+  font-size: var(--small-font);
+  margin-top: var(--3unit);
+  text-align: center;
+}
+
+.app-info {
+  .i-engine {
+    margin-top: 50px;
+
+    .e-version {
+      font-size: var(--small-font);
+    }
+
+    .e-features {
+      color: var(--second-color);
+    }
+  }
+}
+
+.panel-add-task {
+  .p-content {
+    padding: var(--2unit) 0;
+    display: grid;
+    grid-template-columns: 100px repeat(4, 1fr);
+    grid-template-rows: auto;
+    grid-row-gap: var(--3unit);
+
+    .span-1-6 {
+      grid-column: 1 / 6;
+    }
+
+    .span-2-6 {
+      grid-column: 2 / 6;
+    }
+
+    .textarea {
+      height: 60px;
+      padding: 4px;
+    }
+
+    .label {
+      font-size: var(--small-font);
+      display: flex;
+      align-items: center;
+
+      &.l-start {
+        align-items: flex-start;
+        padding-top: 8px;
+
+        &+.textarea {
+          min-height: 50px;
+          resize: vertical;
+        }
+      }
+    }
+
+    .out-input {
+      grid-column: 2 / 4;
+      margin-right: var(--3unit);
+    }
+  }
+
+  .p-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--3unit) var(--2unit);
+    background-color: var(--bg-color);
+    margin: 0 -16px -8px;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+
+    .b-submits {
+      .v-btn {
+        margin-left: var(--2unit);
+      }
     }
   }
 }

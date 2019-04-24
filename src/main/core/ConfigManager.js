@@ -10,7 +10,8 @@ export default class ConfigManager {
   }
 
   init() {
-
+    this.initSystemConfig()
+    this.initUserConfig()
   }
 
   initSystemConfig() {
