@@ -58,6 +58,24 @@
       <path fill="currentColor" d="M9,1H3C2.447,1,2,1.447,2,2v20c0,0.553,0.447,1,1,1h6c0.553,0,1-0.447,1-1V2C10,1.447,9.553,1,9,1z"></path>
       <path fill="currentColor" d="M21,1h-6c-0.553,0-1,0.447-1,1v20c0,0.553,0.447,1,1,1h6c0.553,0,1-0.447,1-1V2C22,1.447,21.553,1,21,1z"></path>
     </symbol>
+
+    <symbol id="icon-cv-refresh" viewBox="0 0 24 24">
+      <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+        <path fill="none" stroke-miterlimit="10" d="M22,12c0,5.5-4.5,10-10,10 S2,17.5,2,12S6.5,2,12,2c3.9,0,7.3,2.2,8.9,5.5"></path>
+        <polyline fill="none" stroke-miterlimit="10" points="21.8,1.7 21,7.6 15,6.8 "/>
+      </g>
+    </symbol>
+    <symbol id="icon-cv-start-line" viewBox="0 0 24 24">
+      <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+        <polygon fill="none" stroke-miterlimit="10" points="5,22 5,2 20,12 "/>
+      </g>
+    </symbol>
+    <symbol id="icon-cv-pause-line" viewBox="0 0 24 24">
+      <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+        <rect x="3" y="2" fill="none" stroke-miterlimit="10" width="6" height="20"/>
+        <rect x="15" y="2" fill="none" stroke-miterlimit="10" width="6" height="20"/>
+      </g>
+    </symbol>
   </svg>
 </template>
 
