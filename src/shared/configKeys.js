@@ -1,4 +1,4 @@
-export const userKeys = [
+export const userKeys = new Set([
   'locale',
   'cookie',
   'resume-all-when-app-launched',
@@ -6,15 +6,14 @@ export const userKeys = [
   'hide-app-menu',
   'new-task-show-downloading',
   'use-proxy',
-  'all-proxy-backup',
   'log-path',
   'session-path',
   'enable-egg-features',
   'auto-check-update',
   'last-check-update-time'
-]
+])
 
-export const systemKeys = [
+export const systemKeys = new Set([
   'max-concurrent-downloads',
   'all-proxy',
   'all-proxy-passwd',
@@ -126,4 +125,4 @@ export const systemKeys = [
   'uri-selector',
   'use-head',
   'user-agent'
-]
+])

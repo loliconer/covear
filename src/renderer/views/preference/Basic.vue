@@ -68,9 +68,7 @@
           'auto-check-update',
           'new-task-show-downloading'
         ]
-        for (let key of configs) {
-          this.options[key] = this.config[key]
-        }
+        for (let key of configs) this.options[key] = this.config[key]
       },
       openDialogDir() {
         electron.remote.dialog.showOpenDialog({
@@ -83,7 +81,7 @@
       },
       save() {
         this.savePreference(this.options)
-        electron.ipcRenderer.send('command', 'application:relaunch')
+        // electron.ipcRenderer.send('command', 'application:relaunch')
       }
     },
     created() {

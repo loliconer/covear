@@ -48,7 +48,7 @@
   import {remote} from 'electron'
   import is from 'electron-is'
   import engine from '../js/engine'
-  import {mapMutations} from 'vuex'
+  import {mapState, mapMutations} from 'vuex'
 
   export default {
     name: 'AddTask',
@@ -58,7 +58,9 @@
         tab: 0,
         options: {
           uris: '',
-          dir: ''
+          dir: '',
+          split: 0,
+          'new-task-show-downloading': false
         },
         urisArray: [],
         isShowAdvancedOptions: false,
@@ -66,8 +68,18 @@
         loading: false
       }
     },
+    computed: {
+      ...mapState('preference', ['config'])
+    },
     methods: {
       ...mapMutations('app', ['updateTaskList']),
+      initOptions() {
+        const configs = [
+          'dir', 'split',
+          'new-task-show-downloading'
+        ]
+        for (let key of configs) this.options[key] = this.config[key]
+      },
       openDialogDir() {
         remote.dialog.showOpenDialog({
           properties: ['openDirectory']
@@ -156,6 +168,8 @@
       const resourceProtocol = ['http://', 'https://', 'ftp://', 'magnet:', 'thunder://']
       const hasResource = resourceProtocol.some(protocol => content.startsWith(protocol))
       hasResource && (this.options.uris = content)
+
+      this.initOptions()
     }
   }
 </script>

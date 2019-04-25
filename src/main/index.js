@@ -63,9 +63,15 @@ app.on('ready', async () => {
   }
   global.configManager = new ConfigManager()
   ipcMain.on('command', (event, command, ...args) => {
-    if (command === 'application:relaunch') {
-      app.relaunch()
-      app.exit()
+    switch (command) {
+      case 'application:relaunch':
+        app.relaunch()
+        app.exit()
+        break
+      case 'application:reset':
+        global.configManager.reset()
+        app.relaunch()
+        app.exit()
     }
   })
   createWindow()
