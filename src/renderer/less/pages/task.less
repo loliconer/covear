@@ -1,0 +1,48 @@
+@import (reference) "../Mixins";
+
+.page-task {
+  display: flex;
+
+  .p-aside {
+    min-height: 100vh;
+    padding: 40px var(--2unit) 0;
+    user-select: none;
+    background-color: #f4f5f7;
+
+    h3 {
+      font-size: var(--normal-font);
+      font-weight: normal;
+      line-height: var(--3unit);
+      margin: 0 0 var(--3unit);
+    }
+
+    .a-menu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .m-item {
+      width: 160px;
+      cursor: pointer;
+      transition: background-color 0.25s;
+      margin-bottom: var(--unit);
+      font-size: var(--small-font);
+      padding: var(--unit);
+      border-radius: var(--border-radius);
+
+      .icon {
+        margin-right: 12px;
+      }
+
+      &:hover, &.router-link-active {
+        background-color: #eaecf0;
+      }
+    }
+  }
+
+  .p-container {
+    flex: 1;
+    padding: var(--4unit);
+  }
+}

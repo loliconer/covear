@@ -1,9 +1,9 @@
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-import About from './views/About.vue'
 import Preference from './views/preference/Index'
 import Basic from './views/preference/Basic'
 import Advanced from './views/preference/Advanced'
+import Task from './views/task/Index'
 
 Vue.use(Router)
 
@@ -31,6 +31,11 @@ export default new Router({
         }
       ]
     },
-    { path: '/about', name: 'about', component: About }
+    {
+      path: '/task',
+      name: 'task',
+      component: Task,
+      children: []
+    }
   ]
 })
