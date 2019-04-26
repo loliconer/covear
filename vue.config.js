@@ -54,10 +54,5 @@ module.exports = {
     plugins: process.env.NODE_ENV === 'production' ? [
       new ReplaceVendorsPlugin()
     ] : []
-  },
-  pluginOptions: {
-    electronBuilder: {
-      mainProcessFile: 'src/main/index.js'
-    }
   }
 }

@@ -22,7 +22,7 @@ export default class ConfigManager {
         continue: true,
         pause: true,
         split: 16,
-        'rpc-listen-port': 16800,
+        'rpc-listen-port': 6800,
         'rpc-secret': '',
         'auto-file-renaming': true,
         'allow-overwrite': true,

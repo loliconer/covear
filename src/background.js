@@ -1,28 +1,31 @@
-import { app, protocol, BrowserWindow, ipcMain } from 'electron'
+import {app, protocol, BrowserWindow, ipcMain} from 'electron'
 import is from 'electron-is'
 import {
   createProtocol,
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
 // import Launcher from './Launcher'
-import ConfigManager from './core/ConfigManager'
+import ConfigManager from './main/core/ConfigManager'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 is.windows() && app.setAppUserModelId('dapp.lovue.covear')
 // Standard scheme must be registered before the app is ready
-protocol.registerStandardSchemes(['app'], { secure: true })
+protocol.registerSchemesAsPrivileged([{ scheme: 'app', secure: true }])
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
-function createWindow () {
+function createWindow() {
   win = new BrowserWindow({
     title: '掩耳',
     width: 800,
     height: 600,
-    titleBarStyle: 'hiddenInset' })
+    webPreferences: {
+      nodeIntegration: true
+    }
+  })
   // win.setMenu(null)
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
