@@ -14,13 +14,16 @@
   },
   "dependencies": {
     "aria2": "^4.0.3",
+    "electron-debug": "^2.2.0",
     "electron-is": "^3.0.0",
     "electron-log": "^3.0.5",
-    "electron-store": "^3.2.0"
+    "electron-store": "^3.2.0",
+    "forever-monitor": "^1.7.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.5.1",
     "@vue/cli-service": "^3.5.1",
+    "devtron": "^1.4.0",
     "electron": "^5.0.0",
     "less": "^3.8.1",
     "less-loader": "^4.1.0",

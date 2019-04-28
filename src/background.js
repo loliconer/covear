@@ -1,11 +1,14 @@
-import {app, protocol, BrowserWindow, ipcMain} from 'electron'
+import {app, protocol, BrowserWindow, ipcMain, dialog} from 'electron'
 import is from 'electron-is'
 import {
   createProtocol,
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
-
+// import debug from 'electron-debug'
 import ConfigManager from './main/core/ConfigManager'
+import Engine from './main/core/Engine'
+
+// debug()
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -43,6 +46,23 @@ app.on('ready', async () => {
     }
   }
   global.configManager = new ConfigManager()
+
+  const engine = new Engine({
+    systemConfig: global.configManager.getSystemConfig(),
+    userConfig: global.configManager.getUserConfig()
+  })
+  try {
+    engine.start()
+  } catch (e) {
+    dialog.showMessageBox({
+      type: 'error',
+      title: '系统错误',
+      message: `应用启动失败: ${e.message}`
+    }, () => {
+      setTimeout(() => app.quit(), 100)
+    })
+  }
+
   ipcMain.on('command', (event, command, ...args) => {
     switch (command) {
       case 'application:relaunch':

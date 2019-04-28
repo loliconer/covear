@@ -17,7 +17,6 @@ export default class Application extends EventEmitter {
 
   init() {
     this.configManager = new ConfigManager()
-    this.locale = this.configManager.getLocale()
     this.windowManager = new WindowManager({
       userConfig: this.configManager.getUserConfig()
     })
