@@ -45,11 +45,13 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
-  global.configManager = new ConfigManager()
+
+  const configManager = new ConfigManager()
+  global.configManager = configManager
 
   const engine = new Engine({
-    systemConfig: global.configManager.getSystemConfig(),
-    userConfig: global.configManager.getUserConfig()
+    systemConfig: configManager.getSystemConfig(),
+    userConfig: configManager.getUserConfig()
   })
   try {
     engine.start()
@@ -70,7 +72,7 @@ app.on('ready', async () => {
         app.exit()
         break
       case 'application:reset':
-        global.configManager.reset()
+        configManager.reset()
         app.relaunch()
         app.exit()
     }
