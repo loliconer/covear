@@ -12,8 +12,13 @@ export default class Engine extends EventEmitter {
 
     this.systemConfig = options.systemConfig || {}
     this.userConfig = options.userConfig || {}
+    this.maxRestartTimes = options.max || 2
+    this.startTimes = 0
+    this.forceStop = false
     this.aria2 = null
-    this.spawnOptions = {}
+    this.spawnOptions = {
+      cwd: process.cwd()
+    }
 
     this.init()
   }
@@ -39,9 +44,12 @@ export default class Engine extends EventEmitter {
     const sessionPath = userConfig['session-path']
     const args = [
       `--conf-path=${confPath}`,
-      `--save-session=${sessionPath}`,
-      `--input-file=${sessionPath}`
+      `--save-session=${sessionPath}`
     ]
+
+    if (existsSync(sessionPath)) {
+      args.push(`--input-file=${sessionPath}`)
+    }
 
     for (let key in systemConfig) {
       if (systemConfig[key] !== '') args.push(`--${key}=${systemConfig[key]}`)
@@ -51,32 +59,42 @@ export default class Engine extends EventEmitter {
   }
 
   start() {
-    logger.info('[Covear] Engine starting ===>')
-    const aria2 = execFile(this.getBin(), this.getArgs, this.spawnOptions)
+    if (this.startTimes >= this.maxRestartTimes) return
+    this.startTimes++
+    this.forceStop = false
 
-    logger.info('[Covear] Engine pid ===>', child.pid)
+    logger.info('Aria2 starting ===>', this.startTimes)
+    const aria2 = execFile(this.getBin(), this.getArgs(), this.spawnOptions)
 
-    aria2.on('error', err => logger.info('[Covear] Engine error ===>', err))
-    aria2.on('start', () => logger.info('[Covear] Engine started'))
-    aria2.on('stop', () => logger.info('[Covear] Engine stopped'))
-    aria2.on('restart', () => logger.info('[Covear] Engine exit'))
-    aria2.on('exit', code => logger.info('[Covear] Engine exit ===>', code))
+    if (!aria2) {
+      logger.info('Aria2 start failed ===>')
+      return
+    }
+
+    logger.info('Aria2 pid ===>', aria2.pid)
+    aria2.on('error', err => logger.info('Aria2 error ===>', err))
+    aria2.on('exit', (code, signal) => {
+      logger.info('Aria2 exit ===>', code, signal)
+
+      if (this.forceStop) return
+      setTimeout(() => this.start(), 1000)
+    })
 
     this.aria2 = aria2
   }
 
   stop() {
+    logger.info('Aria2 stopped')
+
+    this.forceStop = true
+    this.startTimes = 0
     const { pid } = this.aria2
-    try {
-      this.instance.stop()
-    } catch (e) {
-      logger.error('[Covear] Engine stop failed ===>', err.message)
-      this.forceStop(pid)
-    }
+    process.kill(pid)
   }
 
   restart() {
+    logger.info('Aria2 restart')
     this.stop()
-    this.start()
+    process.nextTick(() => this.start())
   }
 }

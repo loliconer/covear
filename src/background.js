@@ -5,6 +5,7 @@ import {
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
 // import debug from 'electron-debug'
+import logger from './main/core/Logger'
 import ConfigManager from './main/core/ConfigManager'
 import Engine from './main/core/Engine'
 
@@ -45,6 +46,15 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
+
+  process.on('uncaughtException', err => {
+    logger.error(`Uncaught exception: ${err.message}`)
+    logger.error(err.stack)
+
+    if (!is.dev() && app.isReady()) {
+      dialog.showErrorBox('Error: ', err.message)
+    }
+  })
 
   const configManager = new ConfigManager()
   global.configManager = configManager
