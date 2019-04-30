@@ -2,18 +2,9 @@ import {existsSync, lstatSync} from 'fs'
 import {app} from 'electron'
 import {resolve} from 'path'
 import is from 'electron-is'
-import logger from '../core/Logger'
-
-export function getLogPath() {
-  return logger.transports.file.file
-}
 
 export function getSessionPath() {
   return resolve(app.getPath('userData'), './download.session')
-}
-
-export function getUserDownloadsPath() {
-  return app.getPath('downloads')
 }
 
 export function isDirectory(path) {

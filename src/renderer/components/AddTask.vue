@@ -45,10 +45,11 @@
 
 <script>
   import electron from 'electron'
-  import {remote} from 'electron'
   import is from 'electron-is'
   import engine from '../js/engine'
   import {mapState, mapMutations} from 'vuex'
+
+  const {remote} = electron
 
   export default {
     name: 'AddTask',
@@ -125,25 +126,24 @@
         return false
       },
       async submit() {
+        if (this.loading) return
+        this.loading = true
+
         if (this.tab === 0) {
           await engine.addUri({
             uris: this.urisArray,
             options: this.buildOption()
-          })
-          this.updateTaskList(await engine.fetchTaskList({
-            type: 'active'
-          }))
+          }).catch(this.error)
+          this.loading = false
         }
 
-        if (tab === 1) {
+        if (this.tab === 1) {
           const { torrent } = this.options
           await engine.addTorrent({
             torrent,
             options: this.buildOption()
-          })
-          this.updateTaskList(await engine.fetchTaskList({
-            type: 'active'
-          }))
+          }).catch(this.error)
+          this.loading = false
         }
 
         this.$emit('close')
@@ -153,14 +153,15 @@
       },
       buildOption() {
         const { dir, out, split, userAgent, referer, cookie } = this.options
-        return {
-          dir, out, split,
-          header: [
-            `User-Agent: ${userAgent}`,
-            `Referer: ${referer}`,
-            `Cookie: ${cookie}`
-          ]
-        }
+        const options = { split, headers: [] }
+
+        out && (options.out = out)
+        dir && (options.dir = dir)
+        userAgent && options.headers.push(`User-Agent: ${userAgent}`)
+        referer && options.headers.push(`Referer: ${referer}`)
+        cookie && options.headers.push(`Cookie: ${cookie}`)
+
+        return options
       }
     },
     created() {

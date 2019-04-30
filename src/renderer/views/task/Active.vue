@@ -18,14 +18,10 @@
           </div>
           <div class="i-progress"></div>
           <div class="i-bottom">
-            <div class="i-size">
-              <template v-if="task.totalLength > 0">
-                {{task.completedLength}} / {{task.totalLength}}
-              </template>
-            </div>
+            <div class="i-size">{{task.completedLength}} / {{task.totalLength}}</div>
             <div class="i-speed">
               <span>{{task.downloadSpeed}}/s</span>
-              <span>剩余 {{task.remaining}}</span>
+              <span>剩余 {{task.remaining}}s</span>
             </div>
           </div>
         </div>
@@ -36,20 +32,45 @@
 </template>
 
 <script>
+  import engine from 'src/renderer/js/engine'
+  import path from 'path'
+  import {bytesToSize, calcProgress, timeRemaining} from 'src/shared/utils'
+
+  let timer
+
   export default {
     name: 'Active',
     data() {
       return {
-        taskList: [
-          {
-            name: 'ubuntu-18.04-live-server-amd64.iso',
-            totalLength: 812,
-            completedLength: 87,
-            downloadSpeed: '19.5MB',
-            remaining: '38'
-          }
-        ]
+        taskList: []
       }
+    },
+    methods: {
+      async getTaskList() {
+        const body = await engine.fetchActiveTaskList().catch(this.error)
+        if (body === undefined) return
+
+        if (!body.length) return clearTimeout(timer)
+
+        this.taskList = body.map(row => ({
+          name: path.basename(row.files[0].path),
+          completedLength: bytesToSize(row.completedLength),
+          totalLength: bytesToSize(row.totalLength),
+          downloadSpeed: bytesToSize(row.downloadSpeed),
+          gid: row.gid,
+          connections: row.connections,
+          dir: row.dir,
+          remaining: timeRemaining(row.totalLength, row.completedLength, row.downloadSpeed)
+        }))
+
+        timer = setTimeout(() => this.getTaskList(), 500)
+      }
+    },
+    created() {
+      this.getTaskList()
+    },
+    beforeDestroy() {
+      clearTimeout(timer)
     }
   }
 </script>

@@ -1,6 +1,8 @@
 import is from 'electron-is'
 import Store from 'electron-store'
-import {getLogPath, getSessionPath, getUserDownloadsPath} from '../utils/index'
+import logger from './Logger'
+import { getSessionPath } from '../utils/index'
+import {app} from 'electron'
 
 export default class ConfigManager {
   constructor() {
@@ -18,7 +20,7 @@ export default class ConfigManager {
     this.systemConfig = new Store({
       name: 'system',
       defaults: {
-        dir: getUserDownloadsPath(),
+        dir: app.getPath('downloads'),
         continue: true,
         pause: true,
         split: 16,
@@ -50,7 +52,7 @@ export default class ConfigManager {
         'update-channel': 'latest',
         'use-proxy': false,
         'all-proxy-backup': '',
-        'log-path': getLogPath(),
+        'log-path': logger.transports.file.file,
         'session-path': getSessionPath(),
         'auto-check-update': false,
         'last-check-update-time': 0

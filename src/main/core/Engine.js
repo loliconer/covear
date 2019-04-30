@@ -12,7 +12,7 @@ export default class Engine extends EventEmitter {
 
     this.systemConfig = options.systemConfig || {}
     this.userConfig = options.userConfig || {}
-    this.maxRestartTimes = options.max || 2
+    this.maxRestartTimes = options.max || 5
     this.startTimes = 0
     this.forceStop = false
     this.aria2 = null

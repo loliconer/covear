@@ -16,6 +16,11 @@ class Engine {
       secret: configManager.getSystemConfig('rpc-secret')
     })
     this.client.open()
+
+    this.client.on('onDownloadStart', ([guid]) => {
+      console.log('Aria2 onDownloadStart', guid)
+    })
+    // this.client.on('onDownloadComplete')
   }
 
   async close() {
@@ -30,6 +35,7 @@ class Engine {
   addUri(params) {
     const {uris, options} = params
     const tasks = uris.map(uri => ['aria2.addUri', [uri], options])
+    console.log(tasks)
     return this.client.multicall(tasks)
   }
 
@@ -43,32 +49,36 @@ class Engine {
     return this.client.call('addMetalink', metaLink, options)
   }
 
-  fetchTaskList(params = {}) {
-    const { type } = params
-    switch (type) {
-      case 'active':
-        return this.fetchDownloadingTaskList(params)
-      case 'waiting':
-        return this.fetchWaitingTaskList(params)
-      case 'stopped':
-        return this.fetchStoppedTaskList(params)
-      default:
-        return this.fetchDownloadingTaskList(params)
-    }
-  }
-
-  fetchDownloadingTaskList(params = {}) {
-    const { offset = 0, num = 20, keys } = params
-    const result = this.client.multicall([
-      ['aria2.tellActive', keys],
-      ['aria2.tellWaiting', offset, num, keys]
-    ]).catch(err => {
+  async fetchActiveTaskList(params = {}) {
+    const args = [params.keys].filter(item => item !== undefined)
+    const result = await this.client.call('tellActive', ...args).catch(err => {
       console.log('fetchDownloadingTaskList fail===>', err)
     })
     if (result === undefined) return []
 
-    console.log('fetchDownloadingTaskList data', result)
-    return result.flat()
+    return result
+  }
+
+  async fetchWaitingTaskList(params = {}) {
+    const { offset = 0, num = 20, keys } = params
+    const args = [offset, num, keys].filter(item => item !== undefined)
+    const result = await this.client.call('tellWaiting', ...args).catch(err => {
+      console.log('fetchDownloadingTaskList fail===>', err)
+    })
+    if (result === undefined) return []
+
+    return result
+  }
+
+  async fetchStoppedTaskList(params = {}) {
+    const { offset = 0, num = 20, keys } = params
+    const args = [offset, num, keys].filter(item => item !== undefined)
+    const result = await this.client.multicall('tellStopped', ...args).catch(err => {
+      console.log('fetchDownloadingTaskList fail===>', err)
+    })
+    if (result === undefined) return []
+
+    return result
   }
 }
 
