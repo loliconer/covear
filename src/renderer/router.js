@@ -5,8 +5,8 @@ import Basic from './views/preference/Basic'
 import Advanced from './views/preference/Advanced'
 import Task from './views/task/Index'
 import Active from './views/task/Active'
-import Waiting from './views/task/Waiting'
 import Stopped from './views/task/Stopped'
+import Trash from './views/task/Trash'
 
 Vue.use(Router)
 
@@ -29,8 +29,8 @@ export default new Router({
       path: '/task', name: 'task', component: Task,
       children: [
         { path: 'active', component: Active },
-        { path: 'waiting', component: Waiting },
-        { path: 'stopped', component: Stopped }
+        { path: 'stopped', component: Stopped },
+        { path: 'trash', component: Trash }
       ]
     }
   ]

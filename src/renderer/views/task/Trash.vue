@@ -1,14 +1,14 @@
 <template>
   <div class="task-stopped">
     <header class="task-header">
-      <div class="task-title">已完成</div>
+      <div class="task-title">已删除</div>
       <div class="task-actions">
       </div>
     </header>
 
     <div class="task-content">
       <div class="task-list">
-        <div class="task-item" v-for="task of taskList">
+        <div class="task-item" v-for="task of removedTaskList">
           <div class="i-above">
             <div class="i-name">{{task.name}}</div>
             <div class="i-actions">
@@ -20,7 +20,7 @@
           </div>
         </div>
       </div>
-      <div class="no-task" v-if="!taskList.length">当前没有下载任务</div>
+      <div class="no-task" v-if="!removedTaskList.length">当前没有下载任务</div>
     </div>
   </div>
 </template>
@@ -30,37 +30,17 @@
   import engine from 'src/renderer/js/engine'
   import path from 'path'
   import {bytesToSize, calcProgress} from 'src/shared/utils'
+  import {mapState, mapMutations} from 'vuex'
 
   let timer
 
   export default {
     name: 'Stopped',
-    data() {
-      return {
-        taskList: []
-      }
+    computed: {
+      ...mapState('app', ['removedTaskList'])
     },
     methods: {
-      async getTaskList() {
-        const body = await engine.fetchStoppedTaskList().catch(this.error)
-        if (body === undefined) return
-
-        this.taskList = body.map(row => ({
-          name: path.basename(row.files[0].path),
-          path: row.files[0].path,
-          completedLength: bytesToSize(row.completedLength),
-          totalLength: bytesToSize(row.totalLength),
-          gid: row.gid,
-          dir: row.dir
-        }))
-
-        if (!body.length) return clearTimeout(timer)
-
-        timer = setTimeout(() => this.getTaskList(), 1000)
-      },
-      openFileFolder(path) {
-        shell.showItemInFolder(path)
-      }
+      ...mapMutations('app', ['deleteRemovedTask'])
     },
     created() {
       this.getTaskList()

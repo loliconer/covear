@@ -1,13 +1,13 @@
 <template>
   <aside class="cv-aside">
     <div class="a-menu top">
-      <router-link class="m-item" to="/task"><v-icon icon="cv-task"></v-icon></router-link>
-      <div class="m-item" @click="showAddTaskPanel"><v-icon icon="cv-add"></v-icon></div>
+      <router-link class="m-item" to="/task"><v-icon icon="list"></v-icon></router-link>
+      <div class="m-item" @click="showAddTaskPanel"><v-icon icon="plus"></v-icon></div>
     </div>
 
     <div class="a-menu bottom">
-      <router-link class="m-item" to="/preference"><v-icon icon="cv-preference"></v-icon></router-link>
-      <div class="m-item" @click="showAboutPanel"><v-icon icon="cv-about"></v-icon></div>
+      <router-link class="m-item" to="/preference"><v-icon icon="setting"></v-icon></router-link>
+      <div class="m-item" @click="showAboutPanel"><v-icon icon="question-o"></v-icon></div>
     </div>
 
     <v-popup v-model="isShowAboutPanel">

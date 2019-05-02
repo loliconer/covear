@@ -3,9 +3,9 @@
     <div class="p-aside">
       <h3>任务列表</h3>
       <div class="a-menu">
-        <router-link class="m-item" to="/task/active"><v-icon icon="cv-start" size="16"></v-icon>下载中</router-link>
-        <router-link class="m-item" to="/task/waiting"><v-icon icon="cv-pause" size="16"></v-icon>等待中</router-link>
-        <router-link class="m-item" to="/task/stopped"><v-icon icon="cv-stop" size="16"></v-icon>已停止</router-link>
+        <router-link class="m-item" to="/task/active"><v-icon icon="play"></v-icon>下载中</router-link>
+        <router-link class="m-item" to="/task/stopped"><v-icon icon="check-circle-color"></v-icon>已完成</router-link>
+        <router-link class="m-item" to="/task/trash"><v-icon icon="delete"></v-icon>已删除</router-link>
       </div>
     </div>
 

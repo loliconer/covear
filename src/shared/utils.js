@@ -13,7 +13,7 @@ export function calcProgress(totalLength, completedLength) {
 
   if (totalLength === 0 || completedLength === 0) return 0
 
-  const percentage = completedLength / totalLength * 100
+  const percentage = completedLength / totalLength
   return parseFloat(percentage.toFixed(2))
 }
 

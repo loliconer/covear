@@ -35,6 +35,14 @@
         margin-right: 12px;
       }
 
+      .icon-play {
+        color: var(--blue-color);
+      }
+
+      .icon-delete {
+        color: var(--error-color);
+      }
+
       &:hover, &.router-link-active {
         background-color: #eaecf0;
       }
@@ -56,7 +64,7 @@
         }
 
         .icon {
-          padding: 4px;
+          padding: 2px;
           margin: 0 4px;
           cursor: pointer;
         }
@@ -88,7 +96,7 @@
 
   .i-above {
     .flex-between;
-    margin-bottom: var(--3unit);
+    margin-bottom: var(--unit);
 
     .i-name {
       .truncate;
@@ -97,18 +105,35 @@
 
     .i-actions {
       flex-shrink: 0;
+
+      .icon {
+        cursor: pointer;
+        margin: 0 4px;
+        padding: 2px;
+      }
     }
   }
 
   .i-bottom {
     .flex-between;
-    color: var(--second-color);
     font-size: var(--tiny-font);
     margin-top: var(--unit);
 
-    .i-speed {
-      span:first-child {
-        margin-right: 4px;
+    .i-size {
+      color: var(--second-color);
+
+      > span:not(:first-child) {
+        margin-left: var(--unit);
+      }
+    }
+  }
+}
+
+.task-stopped {
+  .task-item {
+    .i-actions {
+      .icon {
+
       }
     }
   }

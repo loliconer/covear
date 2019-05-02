@@ -81,6 +81,7 @@
       },
       save() {
         this.savePreference(this.options)
+        this.success('保存成功')
         // electron.ipcRenderer.send('command', 'application:relaunch')
       }
     },
