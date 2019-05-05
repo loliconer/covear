@@ -1,11 +1,5 @@
 import {existsSync, lstatSync} from 'fs'
-import {app} from 'electron'
-import {resolve} from 'path'
 import is from 'electron-is'
-
-export function getSessionPath() {
-  return resolve(app.getPath('userData'), './download.session')
-}
 
 export function isDirectory(path) {
   return existsSync(path) && lstatSync(path).isDirectory()

@@ -1,8 +1,8 @@
 import is from 'electron-is'
 import Store from 'electron-store'
 import logger from './Logger'
-import { getSessionPath } from '../utils/index'
 import {app} from 'electron'
+import {resolve} from 'path'
 
 export default class ConfigManager {
   constructor() {
@@ -53,7 +53,7 @@ export default class ConfigManager {
         'use-proxy': false,
         'all-proxy-backup': '',
         'log-path': logger.transports.file.file,
-        'session-path': getSessionPath(),
+        'session-path': resolve(app.getPath('userData'), './download.session'),
         'auto-check-update': false,
         'last-check-update-time': 0
       }

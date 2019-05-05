@@ -1,5 +1,5 @@
 <template>
-  <div class="task-stopped">
+  <div class="page-task task-stopped">
     <header class="task-header">
       <div class="task-title">已完成</div>
       <div class="task-actions">

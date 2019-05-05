@@ -1,10 +1,9 @@
 <template>
-  <div class="page-preference container">
+  <div class="page-preference">
     <div class="p-aside">
-      <h3>偏好设置</h3>
       <div class="a-menu">
-        <router-link class="m-item" to="/preference/basic"><v-icon icon="cv-basic" size="16"></v-icon>基础设置</router-link>
-        <router-link class="m-item" to="/preference/advanced"><v-icon icon="cv-advanced" size="16"></v-icon>高级设置</router-link>
+        <router-link class="m-item" to="/preference/basic">基础设置</router-link>
+        <router-link class="m-item" to="/preference/advanced">高级设置</router-link>
       </div>
     </div>
 

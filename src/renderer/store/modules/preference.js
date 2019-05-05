@@ -6,7 +6,6 @@ const configManager = remote.getGlobal('configManager')
 export default {
   namespaced: true,
   state: {
-    engineMode: 'MAX',
     config: {
       ...configManager.getSystemConfig(),
       ...configManager.getUserConfig()

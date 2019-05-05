@@ -1,38 +1,56 @@
 @import (reference) "Mixins";
 
 .cv-aside {
-  width: 78px;
+  width: 200px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: rgba(0, 0, 0, 0.8);
 
   .a-menu {
+    flex: 1;
+    padding: var(--unit);
+    color: var(--white);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    color: var(--white);
 
     .m-item {
-      width: 32px;
-      height: 32px;
-      margin-top: 24px;
-      padding: 6px;
-      border-radius: 16px;
+      .flex-start;
+      padding: var(--unit) var(--2unit);
+      border-radius: 20px;
       cursor: pointer;
       transition: background-color 0.25s;
+      font-size: var(--small-font);
+
+      .icon {
+        margin-right: var(--2unit);
+      }
+
+      .icon-play {
+        color: var(--blue-color);
+      }
+
+      .icon-delete {
+        color: var(--error-color);
+      }
 
       &:hover {
         background-color: rgba(255, 255, 255, 0.15);
       }
     }
 
-    &.top {
-      flex: 1;
+    .m-top {
+      .m-item {
+        margin-top: var(--3unit);
+      }
     }
 
-    &.bottom {
-      margin-bottom: 24px;
+    .m-bottom {
+      margin-top: auto;
+
+      .m-item {
+        margin-bottom: var(--3unit);
+      }
     }
   }
 }

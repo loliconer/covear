@@ -5,16 +5,9 @@
 
   .p-aside {
     min-height: 100vh;
-    padding: 40px var(--2unit) 0;
+    padding: 40px 0 0;
     user-select: none;
     background-color: #F4F5F7;
-
-    h3 {
-      font-size: var(--normal-font);
-      font-weight: normal;
-      line-height: var(--3unit);
-      margin: 0 0 var(--3unit);
-    }
 
     .a-menu {
       display: flex;
@@ -25,25 +18,30 @@
     .m-item {
       width: 160px;
       cursor: pointer;
-      transition: background-color 0.25s;
+      transition: background-color 0.25s, color .25s;
       margin-bottom: var(--unit);
       font-size: var(--small-font);
-      padding: var(--unit);
+      padding: var(--2unit) var(--3unit);
       border-radius: var(--border-radius);
 
       .icon {
         margin-right: 12px;
       }
 
-      &:hover, &.router-link-active {
-        background-color: #EAECF0;
+      &:hover {
+        color: var(--blue-color);
+      }
+
+      &.router-link-active {
+        background-color: var(--white);
+        color: var(--blue-color);
       }
     }
   }
 
   .p-container {
     flex: 1;
-    padding: var(--4unit);
+    padding: var(--3unit);
 
     h4 {
       margin: 0;

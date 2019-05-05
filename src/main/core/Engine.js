@@ -59,6 +59,8 @@ export default class Engine extends EventEmitter {
   }
 
   start() {
+    console.log('start Times ', this.startTimes)
+
     if (this.startTimes >= this.maxRestartTimes) return
     this.startTimes++
     this.forceStop = false

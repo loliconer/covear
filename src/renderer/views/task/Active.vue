@@ -1,5 +1,5 @@
 <template>
-  <div class="task-active">
+  <div class="page-task task-active">
     <header class="task-header">
       <div class="task-title">下载中</div>
       <div class="task-actions" v-if="activeTaskList.length || waitingTaskList.length">

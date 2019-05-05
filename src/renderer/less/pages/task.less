@@ -1,86 +1,35 @@
 @import (reference) "../Mixins";
 
 .page-task {
-  display: flex;
+  padding: var(--3unit);
 
-  .p-aside {
-    min-height: 100vh;
-    padding: 40px var(--2unit) 0;
-    user-select: none;
-    background-color: #f4f5f7;
+  .task-header {
+    .flex-between;
+    .mixin-border-bottom;
+    padding: var(--unit) 0;
 
-    h3 {
-      font-size: var(--normal-font);
-      font-weight: normal;
-      line-height: var(--3unit);
-      margin: 0 0 var(--3unit);
+    .task-title {
+      height: 20px;
     }
 
-    .a-menu {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .m-item {
-      width: 160px;
-      cursor: pointer;
-      transition: background-color 0.25s;
-      margin-bottom: var(--unit);
-      font-size: var(--small-font);
-      padding: var(--unit);
-      border-radius: var(--border-radius);
+    .task-actions {
+      height: 20px;
 
       .icon {
-        margin-right: 12px;
-      }
-
-      .icon-play {
-        color: var(--blue-color);
-      }
-
-      .icon-delete {
-        color: var(--error-color);
-      }
-
-      &:hover, &.router-link-active {
-        background-color: #eaecf0;
+        padding: 2px;
+        margin: 0 4px;
+        cursor: pointer;
       }
     }
   }
 
-  .p-container {
-    flex: 1;
-    padding: var(--4unit);
+  .task-content {
+    padding: var(--2unit) 0;
 
-    .task-header {
-      .flex-between;
-      .mixin-border-bottom;
-      padding: var(--unit) 0;
-
-      .task-title {
-        height: 20px;
-      }
-
-      .task-actions {
-        height: 20px;
-
-        .icon {
-          padding: 2px;
-          margin: 0 4px;
-          cursor: pointer;
-        }
-      }
-    }
-
-    .task-content {
-      padding: var(--2unit) 0;
-
-      .no-task {
-        text-align: center;
-        font-size: var(--small-font);
-        padding-top: 360px;
-      }
+    .no-task {
+      text-align: center;
+      font-size: var(--small-font);
+      padding-top: 360px;
     }
   }
 }

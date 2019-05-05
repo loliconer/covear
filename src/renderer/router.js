@@ -3,7 +3,6 @@ import Home from './views/Home.vue'
 import Preference from './views/preference/Index'
 import Basic from './views/preference/Basic'
 import Advanced from './views/preference/Advanced'
-import Task from './views/task/Index'
 import Active from './views/task/Active'
 import Stopped from './views/task/Stopped'
 import Trash from './views/task/Trash'
@@ -25,13 +24,8 @@ export default new Router({
         { path: 'advanced', component: Advanced }
       ]
     },
-    {
-      path: '/task', name: 'task', component: Task,
-      children: [
-        { path: 'active', component: Active },
-        { path: 'stopped', component: Stopped },
-        { path: 'trash', component: Trash }
-      ]
-    }
+    { path: '/task/active', component: Active },
+    { path: '/task/stopped', component: Stopped },
+    { path: '/task/trash', component: Trash }
   ]
 })

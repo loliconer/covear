@@ -1,7 +1,9 @@
 <template>
   <div id="app" style="display: flex;">
     <cv-aside></cv-aside>
-    <router-view/>
+    <div class="container">
+      <router-view/>
+    </div>
   </div>
 </template>
 
