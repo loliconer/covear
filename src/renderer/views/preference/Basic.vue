@@ -9,7 +9,7 @@
       <label class="label">默认下载路径</label>
       <div class="cv-select-dir">
         <v-input v-model="options.dir" readonly></v-input>
-        <v-button @click="openDialogDir"><v-icon icon="folder"></v-icon></v-button>
+        <v-button @click="openDialogDir"><v-icon icon="folder-flat"></v-icon></v-button>
       </div>
       <label class="label l-start">任务管理</label>
       <div class="controls">

@@ -2,12 +2,12 @@
   <div class="panel-add-task">
     <v-tab :titles="titles" v-model="tab"></v-tab>
     <div class="p-content">
-      <textarea class="textarea span-1-6" placeholder="添加多个下载链接时，请确保每行只有一个链接（支持磁力链）" v-model="options.uris" v-if="tab === 0"></textarea>
+      <textarea class="textarea span-1-6" placeholder="添加多个下载链接时，请确保每行只有一个链接（支持磁力链，一次只能添加一个）" v-model="options.uris" v-if="tab === 0"></textarea>
       <div class="cv-upload span-1-6" v-else>
         <v-icon icon="upload"></v-icon>
         <span class="u-tip">将种子拖到此处，或点击选择</span>
-        <span>{{torrentName}}</span>
-        <input type="file">
+        <span class="u-name">{{torrentName}}</span>
+        <input type="file" accept=".torrent" @change="selectTorrent">
       </div>
       <label class="label">重命名</label>
       <v-input class="out-input" v-model="options.out" placeholder="选填（仅支持单任务）"></v-input>
@@ -16,7 +16,7 @@
       <label class="label">存储路径</label>
       <div class="cv-select-dir span-2-6">
         <v-input v-model="options.dir"></v-input>
-        <v-button @click="openDialogDir"><v-icon icon="folder"></v-icon></v-button>
+        <v-button @click="openDialogDir"><v-icon icon="folder-flat"></v-icon></v-button>
       </div>
 
       <!--高级选项-->
@@ -29,7 +29,7 @@
         <textarea class="textarea span-2-6" v-model="options.cookie"></textarea>
         <label class="label"></label>
         <div style="display: flex;">
-          <v-checkbox label="跳转到下载页面" v-model="options.newTaskShowDownloading"></v-checkbox>
+          <v-checkbox label="跳转到下载页面" v-model="options['new-task-show-downloading']"></v-checkbox>
         </div>
       </template>
     </div>
@@ -46,6 +46,7 @@
 <script>
   import electron from 'electron'
   import is from 'electron-is'
+  import parseTorrent from 'parse-torrent'
   import engine from '../js/engine'
   import {mapState, mapMutations} from 'vuex'
 
@@ -64,6 +65,7 @@
           'new-task-show-downloading': false
         },
         urisArray: [],
+        metalinks: [],
         isShowAdvancedOptions: false,
         torrentName: '',
         loading: false
@@ -90,6 +92,16 @@
           this.options.dir = filePaths[0]
         })
       },
+      selectTorrent(ev) {
+        const file = ev.target.files[0]
+        this.torrentName = file.name
+
+        const reader = new FileReader()
+        reader.onload = () => {
+          this.options.torrent = reader.result.split('base64,')[1]
+        }
+        reader.readAsDataURL(file)
+      },
       preSubmit() {
         if (this.tab === 0 && !this.checkCopyright()) return
 
@@ -100,6 +112,7 @@
         const videoExt = ['.avi', '.mkv', '.rmvb', '.wmv', '.mp4', '.m4a', '.vob', '.mov', '.mpg']
 
         let links = this.options.uris.replace(/\r\n/g, '\n').split('\n')
+
         links = links.filter(link => !!link).map(link => {
           if (!link.startsWith('thunder://')) return link
 

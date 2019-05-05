@@ -1,10 +1,13 @@
+import EventEmitter from 'events'
 import {remote} from 'electron'
 import Aria2 from 'aria2'
 
 const configManager = remote.getGlobal('configManager')
 
-class Engine {
+class Engine extends EventEmitter {
   constructor(options = {}) {
+    super()
+
     this.options = options
     this.client = null
     this.init()
@@ -19,8 +22,14 @@ class Engine {
 
     this.client.on('onDownloadStart', ([guid]) => {
       console.log('Aria2 onDownloadStart', guid)
+      window.dispatchEvent(new CustomEvent('Aria2DownloadStart'))
     })
-    // this.client.on('onDownloadComplete')
+    this.client.on('onDownloadComplete', () => {
+      window.dispatchEvent(new CustomEvent('Aria2DownloadComplete'))
+    })
+    this.client.on('onDownloadPause', () => {
+      window.dispatchEvent(new CustomEvent('Aria2DownloadPause'))
+    })
   }
 
   async close() {
@@ -94,34 +103,28 @@ class Engine {
 
   async fetchActiveTaskList(params = {}) {
     const args = [params.keys].filter(item => item !== undefined)
-    const result = await this.client.call('tellActive', ...args).catch(err => {
+    return await this.client.call('tellActive', ...args).catch(err => {
       console.log('fetchActiveTaskList fail===>', err)
+      return []
     })
-    if (result === undefined) return []
-
-    return result
   }
 
   async fetchWaitingTaskList(params = {}) {
     const { offset = 0, num = 20, keys } = params
     const args = [offset, num, keys].filter(item => item !== undefined)
-    const result = await this.client.call('tellWaiting', ...args).catch(err => {
+    return await this.client.call('tellWaiting', ...args).catch(err => {
       console.log('fetchWaitingTaskList fail===>', err)
+      return []
     })
-    if (result === undefined) return []
-
-    return result
   }
 
   async fetchStoppedTaskList(params = {}) {
     const { offset = 0, num = 20, keys } = params
     const args = [offset, num, keys].filter(item => item !== undefined)
-    const result = await this.client.call('tellStopped', ...args).catch(err => {
+    return await this.client.call('tellStopped', ...args).catch(err => {
       console.log('fetchStoppedTaskList fail===>', err)
+      return []
     })
-    if (result === undefined) return []
-
-    return result
   }
 }
 

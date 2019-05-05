@@ -31,8 +31,6 @@
   import path from 'path'
   import {bytesToSize, calcProgress} from 'src/shared/utils'
 
-  let timer
-
   export default {
     name: 'Stopped',
     data() {
@@ -53,10 +51,6 @@
           gid: row.gid,
           dir: row.dir
         }))
-
-        if (!body.length) return clearTimeout(timer)
-
-        timer = setTimeout(() => this.getTaskList(), 1000)
       },
       openFileFolder(path) {
         shell.showItemInFolder(path)
@@ -64,9 +58,6 @@
     },
     created() {
       this.getTaskList()
-    },
-    beforeDestroy() {
-      clearTimeout(timer)
     }
   }
 </script>

@@ -76,6 +76,7 @@ export default class Engine extends EventEmitter {
     aria2.on('exit', (code, signal) => {
       logger.info('Aria2 exit ===>', code, signal)
 
+      console.log('forceStop: ', this.forceStop)
       if (this.forceStop) return
       setTimeout(() => this.start(), 1000)
     })

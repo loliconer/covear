@@ -11,6 +11,9 @@
   export default {
     components: {
       [Aside.name]: Aside
+    },
+    created() {
+      this.$router.push('/task/active')
     }
   }
 </script>

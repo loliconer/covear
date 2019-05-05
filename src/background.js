@@ -20,8 +20,8 @@ let win
 function createWindow() {
   win = new BrowserWindow({
     title: '掩耳',
-    width: 800,
-    height: 600,
+    width: 1920,
+    height: 1080,
     webPreferences: {
       nodeIntegration: true
     }

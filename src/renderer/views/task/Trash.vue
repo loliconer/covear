@@ -32,8 +32,6 @@
   import {bytesToSize, calcProgress} from 'src/shared/utils'
   import {mapState, mapMutations} from 'vuex'
 
-  let timer
-
   export default {
     name: 'Stopped',
     computed: {
@@ -41,12 +39,6 @@
     },
     methods: {
       ...mapMutations('app', ['deleteRemovedTask'])
-    },
-    created() {
-      this.getTaskList()
-    },
-    beforeDestroy() {
-      clearTimeout(timer)
     }
   }
 </script>

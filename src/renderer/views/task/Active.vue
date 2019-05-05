@@ -2,7 +2,8 @@
   <div class="task-active">
     <header class="task-header">
       <div class="task-title">下载中</div>
-      <div class="task-actions">
+      <div class="task-actions" v-if="activeTaskList.length || waitingTaskList.length">
+        <span title="刷新任务列表"><v-icon icon="download" @click="getTaskList"></v-icon></span>
         <span title="恢复所有任务"><v-icon icon="reload" @click="unpauseAll"></v-icon></span>
         <span title="暂停所有任务"><v-icon icon="pause" @click="pauseAll"></v-icon></span>
         <span title="删除所有任务" @click="delAllTasks"><v-icon icon="delete"></v-icon></span>
@@ -57,6 +58,7 @@
   import engine from 'src/renderer/js/engine'
   import {bytesToSize, calcProgress, timeRemaining} from 'src/shared/utils'
   import {mapMutations} from 'vuex'
+  import {sleep} from 'lovue/dist/utils.esm'
 
   let timer
 
@@ -71,6 +73,8 @@
     methods: {
       ...mapMutations('app', ['addRemovedTask']),
       getTaskList() {
+        clearTimeout(timer)
+
         this.getActiveTaskList()
         this.getWaitingTaskList()
       },
@@ -115,12 +119,10 @@
           return await engine.forcePause(task.gid)
         })
         await engine.saveSession()
-        this.getWaitingTaskList()
       },
       async unpauseTask(task) {
         await engine.unpause(task.gid).catch(this.error)
         await engine.saveSession()
-        this.getWaitingTaskList()
       },
       delTask(task) {
         remote.dialog.showMessageBox({
@@ -151,12 +153,10 @@
       async unpauseAll() {
         await engine.unpauseAll().catch(this.error)
         await engine.saveSession()
-        this.getWaitingTaskList()
       },
       async pauseAll() {
         await engine.pauseAll().catch(this.error)
         await engine.saveSession()
-        this.getWaitingTaskList()
       },
       delAllTasks() {
         remote.dialog.showMessageBox({
@@ -178,8 +178,15 @@
         })
       }
     },
-    created() {
+    async created() {
+      await sleep(100)
       this.getTaskList()
+
+      window.addEventListener('Aria2DownloadStart', () => {
+        this.getWaitingTaskList()
+        if (!this.activeTaskList.length) this.getActiveTaskList()
+      })
+      window.addEventListener('Aria2DownloadPause', () => this.getWaitingTaskList())
     },
     beforeDestroy() {
       clearTimeout(timer)
