@@ -46,7 +46,7 @@
 <script>
   import electron from 'electron'
   import is from 'electron-is'
-  import parseTorrent from 'parse-torrent'
+  // import parseTorrent from 'parse-torrent'
   import engine from '../js/engine'
   import {mapState, mapMutations} from 'vuex'
 
