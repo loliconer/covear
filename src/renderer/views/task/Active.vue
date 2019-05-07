@@ -3,8 +3,8 @@
     <header class="task-header">
       <div class="task-title">下载中</div>
       <div class="task-actions" v-if="activeTaskList.length || waitingTaskList.length">
-        <span title="刷新任务列表"><v-icon icon="download" @click="getTaskList"></v-icon></span>
-        <span title="恢复所有任务"><v-icon icon="reload" @click="unpauseAll"></v-icon></span>
+        <span title="刷新任务列表"><v-icon icon="reload" @click="getTaskList"></v-icon></span>
+        <span title="恢复所有任务"><v-icon icon="download" @click="unpauseAll"></v-icon></span>
         <span title="暂停所有任务"><v-icon icon="pause" @click="pauseAll"></v-icon></span>
         <span title="删除所有任务" @click="delAllTasks"><v-icon icon="delete"></v-icon></span>
       </div>
@@ -25,8 +25,14 @@
             <div class="i-size">
               <span>{{task.completedLength}} / {{task.totalLength}}</span>
               <span>剩余 {{task.remaining}}s</span>
+              <span>连接数 {{task.connections}}</span>
             </div>
-            <div class="i-speed">
+            <div class="i-upload" v-if="task.seeder">
+              <span>正在做种</span>
+              <span>上传速度 {{task.uploadSpeed}}/s</span>
+              <span>已上传 {{task.uploadLength}}</span>
+            </div>
+            <div class="i-speed" v-else>
               <span>{{task.downloadSpeed}}/s</span>
             </div>
           </div>
@@ -66,7 +72,8 @@
     data() {
       return {
         activeTaskList: [],
-        waitingTaskList: []
+        waitingTaskList: [],
+        isPausing: false
       }
     },
     methods: {
@@ -91,7 +98,10 @@
           gid: row.gid,
           connections: row.connections,
           dir: row.dir,
-          remaining: timeRemaining(row.totalLength, row.completedLength, row.downloadSpeed)
+          remaining: timeRemaining(row.totalLength, row.completedLength, row.downloadSpeed),
+          seeder: row.seeder === 'true',
+          uploadLength: bytesToSize(row.uploadLength),
+          uploadSpeed: bytesToSize(row.uploadSpeed)
         }))
 
         if (!body.length) return clearTimeout(timer)
@@ -113,6 +123,9 @@
         }))
       },
       async pauseTask(task) {
+        if (this.isPausing) return this.warn('存在正在暂停的任务，请稍后重试')
+        this.isPausing = true
+
         await client.send('pause', task.gid).catch(async error => {
           this.error(error)
           return await client.send('forcePause', task.gid)
@@ -140,7 +153,10 @@
             this.addRemovedTask(task)
 
             if (checkboxChecked) {
-              // 磁力链接任务，有 bittorrent，但没有 bittorrent.info
+              /**
+               * 磁力链接任务，有 bittorrent，但没有 bittorrent.info
+               * 在没下完变成BT任务之前 path 不是一个完整路径，未避免误删所在目录，所以删除时直接返回 true
+               */
               if (task.bittorrent && !task.bittorrent.info) return
 
               remote.shell.moveItemToTrash(task.path)
@@ -154,6 +170,9 @@
         await client.send('saveSession')
       },
       async pauseAll() {
+        if (this.isPausing) return
+        this.isPausing = true
+
         await client.send('pauseAll').catch(this.error)
         await client.send('saveSession')
       },
@@ -178,14 +197,19 @@
       }
     },
     async created() {
-      await sleep(100)
+      while (client.ws.readyState !== 1) {
+        await sleep(100)
+      }
       this.getTaskList()
 
-      window.addEventListener('Aria2DownloadStart', () => {
+      client.on('onDownloadStart', () => {
         this.getWaitingTaskList()
         if (!this.activeTaskList.length) this.getActiveTaskList()
       })
-      window.addEventListener('Aria2DownloadPause', () => this.getWaitingTaskList())
+      client.on('onDownloadPause', () => {
+        this.isPausing = false
+        this.getWaitingTaskList()
+      })
     },
     beforeDestroy() {
       clearTimeout(timer)

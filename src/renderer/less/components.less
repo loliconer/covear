@@ -1,6 +1,7 @@
 @import (reference) "Mixins";
 
 .cv-aside {
+  flex-shrink: 0;
   width: 200px;
   min-height: 100vh;
   display: flex;
@@ -166,6 +167,8 @@
     .textarea {
       height: 60px;
       padding: 4px;
+      resize: vertical;
+      word-break: break-all;
     }
 
     .label {

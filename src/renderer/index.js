@@ -2,16 +2,23 @@ import './less/style.less'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import {remote} from 'electron'
+import {remote, ipcRenderer} from 'electron'
 import Client from './aria2'
 
 const configManager = remote.getGlobal('configManager')
 
 Vue.config.productionTip = false
 
-window.client = new Client({
-  port: configManager.getSystemConfig('rpc-listen-port'),
-  secret: configManager.getSystemConfig('rpc-secret')
+function initClient() {
+  window.client = new Client({
+    port: configManager.getSystemConfig('rpc-listen-port'),
+    secret: configManager.getSystemConfig('rpc-secret')
+  })
+}
+initClient()
+
+ipcRenderer.on('aria2:restart', () => {
+  initClient()
 })
 
 new Vue({

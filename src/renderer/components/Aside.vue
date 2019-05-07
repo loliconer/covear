@@ -10,6 +10,7 @@
       </div>
 
       <div class="m-bottom">
+        <div class="m-item" @click="restartAria2" v-if="isShowRestartItem"><v-icon icon="reload"></v-icon>重启Aria2</div>
         <router-link class="m-item" to="/preference/basic"><v-icon icon="setting"></v-icon>设置</router-link>
         <div class="m-item" @click="showAboutPanel"><v-icon icon="question-o"></v-icon>关于</div>
       </div>
@@ -28,11 +29,13 @@
 <script>
   import About from './About'
   import AddTask from './AddTask'
+  import {ipcRenderer} from 'electron'
 
   export default {
     name: 'cv-aside',
     data() {
       return {
+        isShowRestartItem: false,
         isShowAboutPanel: false,
         isShowAddTaskPanel: false
       }
@@ -48,7 +51,15 @@
       },
       showAddTaskPanel() {
         this.isShowAddTaskPanel = true
+      },
+      restartAria2() {
+        ipcRenderer.send('aria2:start')
       }
+    },
+    created() {
+      ipcRenderer.on('aria2:exit', () => {
+        this.isShowRestartItem = true
+      })
     }
   }
 </script>

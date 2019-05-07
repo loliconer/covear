@@ -17,6 +17,10 @@ class Deferred {
 }
 
 export default class Client extends EventEmitter {
+  #lastId = 0
+  ws = null
+  defers = {}
+
   constructor(options = {}) {
     super()
 
@@ -25,9 +29,6 @@ export default class Client extends EventEmitter {
     this.port = options.port || 6800
     this.secret = options.secret || ''
     this.path = options.path || '/jsonrpc'
-    this.ws = null
-    this.lastId = 0
-    this.defers = {}
 
     this.init()
   }
@@ -64,12 +65,13 @@ export default class Client extends EventEmitter {
       defer.resolve(result)
       delete this.defers[id]
     } else if (message.id === undefined) {
-      this.emit(message.method, message.params)
+      const method = message.method.split('aria2.')[1] || message.method
+      this.emit(method, message.params)
     }
   }
 
   id() {
-    return this.lastId++
+    return this.#lastId++
   }
 
   secretParams(params) {
@@ -81,8 +83,8 @@ export default class Client extends EventEmitter {
     return params
   }
 
-  send(method, ...params) {
-    if (this.ws.readyState !== 1) return
+  async send(method, ...params) {
+    if (this.ws.readyState !== 1) throw 'WebSocket 连接失败'
 
     params = this.secretParams(params)
 
@@ -100,12 +102,10 @@ export default class Client extends EventEmitter {
   }
 
   async multi(calls) {
-    return this.send('system.multicall', [
-      calls.map(([method, ...params]) => ({
-        methodName: prefix(method),
-        params: this.secretParams(params)
-      }))
-    ])
+    return this.send('system.multicall', calls.map(([method, ...params]) => ({
+      methodName: prefix(method),
+      params: this.secretParams(params)
+    })))
   }
 
   close() {

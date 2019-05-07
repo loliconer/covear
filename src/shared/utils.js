@@ -21,5 +21,8 @@ export function timeRemaining(totalLength, completedLength, downloadSpeed) {
   totalLength = +totalLength
   completedLength = +completedLength
   downloadSpeed = +downloadSpeed
-  return Math.ceil((totalLength - completedLength) / downloadSpeed)
+  const remainingLength = totalLength - completedLength
+  if (remainingLength === 0) return 0
+  if (downloadSpeed === 0) return '-'
+  return Math.ceil(remainingLength / downloadSpeed)
 }

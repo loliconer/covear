@@ -2,7 +2,7 @@ import {EventEmitter} from 'events'
 import {existsSync} from 'fs'
 import {resolve, join} from 'path'
 import {execFile} from 'child_process'
-import {app} from 'electron'
+import {app, webContents} from 'electron'
 import is from 'electron-is'
 import logger from './Logger'
 
@@ -58,19 +58,18 @@ export default class Engine extends EventEmitter {
     return args
   }
 
-  start() {
+  start(isRestart) {
     console.log('start Times ', this.startTimes)
 
     if (this.startTimes >= this.maxRestartTimes) return
     this.startTimes++
-    this.forceStop = false
 
     logger.info('Aria2 starting ===>', this.startTimes)
     const aria2 = execFile(this.getBin(), this.getArgs(), this.spawnOptions)
 
     if (!aria2) {
       logger.info('Aria2 start failed ===>')
-      return
+      throw 'Aria2 start failed'
     }
 
     logger.info('Aria2 pid ===>', aria2.pid)
@@ -78,12 +77,21 @@ export default class Engine extends EventEmitter {
     aria2.on('exit', (code, signal) => {
       logger.info('Aria2 exit ===>', code, signal)
 
-      console.log('forceStop: ', this.forceStop)
-      if (this.forceStop) return
-      setTimeout(() => this.start(), 1000)
+      if (this.forceStop) {
+        this.forceStop = false
+        this.emit('aria2:exit')
+        return
+      }
+      if (this.startTimes >= this.maxRestartTimes) {
+        this.emit('aria2:exit')
+      }
+
+      setTimeout(() => this.start(true), 1000)
     })
 
     this.aria2 = aria2
+
+    if (isRestart) this.emit('aria2:restart')
   }
 
   stop() {
@@ -97,7 +105,9 @@ export default class Engine extends EventEmitter {
 
   restart() {
     logger.info('Aria2 restart')
-    this.stop()
-    process.nextTick(() => this.start())
+
+    this.startTimes = 0
+    const { pid } = this.aria2
+    process.kill(pid)
   }
 }

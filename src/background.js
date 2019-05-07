@@ -63,17 +63,27 @@ app.on('ready', async () => {
     systemConfig: configManager.getSystemConfig(),
     userConfig: configManager.getUserConfig()
   })
-  try {
-    engine.start()
-  } catch (e) {
-    dialog.showMessageBox({
-      type: 'error',
-      title: '系统错误',
-      message: `应用启动失败: ${e.message}`
-    }, () => {
-      setTimeout(() => app.quit(), 100)
-    })
+  engine.on('aria2:exit', () => {
+    win.webContents.send('aria2:exit')
+  })
+  engine.on('aria2:restart', () => {
+    win.webContents.send('aria2:restart')
+  })
+
+  const startEngine = () => {
+    try {
+      engine.start()
+    } catch (e) {
+      dialog.showMessageBox({
+        type: 'error',
+        title: '系统错误',
+        message: `应用启动失败: ${e.message}`
+      }, () => {
+        setTimeout(() => app.quit(), 100)
+      })
+    }
   }
+  startEngine()
 
   ipcMain.on('command', (event, command, ...args) => {
     switch (command) {
@@ -85,6 +95,10 @@ app.on('ready', async () => {
         configManager.reset()
         app.relaunch()
         app.exit()
+        break
+      case 'aria2:start':
+        startEngine()
+        break
     }
   })
   createWindow()
