@@ -8,6 +8,7 @@ import Client from './aria2'
 const configManager = remote.getGlobal('configManager')
 
 Vue.config.productionTip = false
+process.browser = true
 
 function initClient() {
   window.client = new Client({
