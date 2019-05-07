@@ -55,7 +55,6 @@
 <script>
   import {remote} from 'electron'
   import path from 'path'
-  import engine from 'src/renderer/js/engine'
   import {bytesToSize, calcProgress, timeRemaining} from 'src/shared/utils'
   import {mapMutations} from 'vuex'
   import {sleep} from 'lovue/dist/utils.esm'
@@ -79,7 +78,7 @@
         this.getWaitingTaskList()
       },
       async getActiveTaskList() {
-        const body = await engine.fetchActiveTaskList().catch(this.error)
+        const body = await client.send('tellActive').catch(this.error)
         if (body === undefined) return
 
         this.activeTaskList = body.map(row => ({
@@ -100,7 +99,7 @@
         timer = setTimeout(() => this.getActiveTaskList(), 1000)
       },
       async getWaitingTaskList() {
-        const body = await engine.fetchWaitingTaskList().catch(this.error)
+        const body = await client.send('tellWaiting', 0, 20).catch(this.error)
         if (body === undefined) return
 
         this.waitingTaskList = body.map(row => ({
@@ -114,15 +113,15 @@
         }))
       },
       async pauseTask(task) {
-        await engine.pause(task.gid).catch(async error => {
+        await client.send('pause', task.gid).catch(async error => {
           this.error(error)
-          return await engine.forcePause(task.gid)
+          return await client.send('forcePause', task.gid)
         })
-        await engine.saveSession()
+        await client.send('saveSession')
       },
       async unpauseTask(task) {
-        await engine.unpause(task.gid).catch(this.error)
-        await engine.saveSession()
+        await client.send('unpause', task.gid).catch(this.error)
+        await client.send('saveSession')
       },
       delTask(task) {
         remote.dialog.showMessageBox({
@@ -134,8 +133,8 @@
           checkboxLabel: '同时删除文件'
         }, async (response, checkboxChecked) => {
           if (response === 0) {
-            await engine.forceRemove(task.gid).catch(this.error)
-            await engine.saveSession()
+            await client.send('forceRemove', task.gid).catch(this.error)
+            await client.send('saveSession')
 
             this.getWaitingTaskList()
             this.addRemovedTask(task)
@@ -151,12 +150,12 @@
         })
       },
       async unpauseAll() {
-        await engine.unpauseAll().catch(this.error)
-        await engine.saveSession()
+        await client.send('unpauseAll').catch(this.error)
+        await client.send('saveSession')
       },
       async pauseAll() {
-        await engine.pauseAll().catch(this.error)
-        await engine.saveSession()
+        await client.send('pauseAll').catch(this.error)
+        await client.send('saveSession')
       },
       delAllTasks() {
         remote.dialog.showMessageBox({
@@ -169,10 +168,10 @@
           if (response === 0) {
             const allTasks = [...this.activeTaskList, this.waitingTaskList]
             for (let i = 0; i < allTasks.length; i++) {
-              await engine.forceRemove(allTasks[i].gid).catch(this.error)
+              await client.send('forceRemove', allTasks[i].gid).catch(this.error)
               this.addRemovedTask(allTasks[i])
             }
-            await engine.saveSession()
+            await client.send('saveSession')
             this.getWaitingTaskList()
           }
         })

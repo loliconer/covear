@@ -29,7 +29,7 @@ export default class Client extends EventEmitter {
     this.lastId = 0
     this.defers = {}
 
-    init()
+    this.init()
   }
 
   init() {
@@ -59,7 +59,6 @@ export default class Client extends EventEmitter {
       const defer = this.defers[id]
 
       if (!defer) return
-
       if (error) return defer.reject(error)
 
       defer.resolve(result)

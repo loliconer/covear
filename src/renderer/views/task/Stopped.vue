@@ -27,9 +27,8 @@
 
 <script>
   import {shell} from 'electron'
-  import engine from 'src/renderer/js/engine'
   import path from 'path'
-  import {bytesToSize, calcProgress} from 'src/shared/utils'
+  import {bytesToSize} from 'src/shared/utils'
 
   export default {
     name: 'Stopped',
@@ -40,7 +39,7 @@
     },
     methods: {
       async getTaskList() {
-        const body = await engine.fetchStoppedTaskList().catch(this.error)
+        const body = await client.send('tellStopped', 0, 20).catch(this.error)
         if (body === undefined) return
 
         this.taskList = body.map(row => ({

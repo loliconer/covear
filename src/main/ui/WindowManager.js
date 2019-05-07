@@ -2,8 +2,22 @@ import {join} from 'path'
 import {EventEmitter} from 'events'
 import {app, shell, BrowserWindow} from 'electron'
 import is from 'electron-is'
-import pageConfig from '../configs/page'
 import logger from '../core/Logger'
+
+const pageConfig = {
+  index: {
+    attrs: {
+      title: 'Covear',
+      width: 1024,
+      height: 768,
+      minWidth: 840,
+      minHeight: 420,
+      transparent: !is.windows()
+    },
+    bindCloseToHide: true,
+    url: is.dev() ? `http://localhost:9080` : `file://${__dirname}/index.html`
+  }
+}
 
 const defaultBrowserOptions = {
   titleBarStyle: 'hiddenInset',

@@ -26,10 +26,6 @@
 </template>
 
 <script>
-  import {shell} from 'electron'
-  import engine from 'src/renderer/js/engine'
-  import path from 'path'
-  import {bytesToSize, calcProgress} from 'src/shared/utils'
   import {mapState, mapMutations} from 'vuex'
 
   export default {

@@ -18,7 +18,6 @@
 
 <script>
   import {remote} from 'electron'
-  import engine from 'src/renderer/js/engine'
 
   export default {
     name: 'About',

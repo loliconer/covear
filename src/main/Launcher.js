@@ -3,7 +3,6 @@ import {app} from 'electron'
 import is from 'electron-is'
 import {parseArgv} from './utils'
 import logger from './core/Logger'
-import ExceptionHandler from './core/ExceptionHandler'
 import Application from './Application'
 
 export default class Launcher extends EventEmitter {

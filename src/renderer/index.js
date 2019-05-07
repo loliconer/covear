@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import {remote} from 'electron'
-import Client from './js/aria2'
+import Client from './aria2'
 
 const configManager = remote.getGlobal('configManager')
 

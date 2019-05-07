@@ -47,7 +47,6 @@
   import electron from 'electron'
   import is from 'electron-is'
   // import parseTorrent from 'parse-torrent'
-  import engine from '../js/engine'
   import {mapState, mapMutations} from 'vuex'
 
   const {remote} = electron
@@ -142,20 +141,14 @@
         if (this.loading) return
         this.loading = true
 
+        const option = this.buildOption()
         if (this.tab === 0) {
-          await engine.addUri({
-            uris: this.urisArray,
-            options: this.buildOption()
-          }).catch(this.error)
+          await client.multi(this.urisArray.map(uri => ['addUri', [uri], option])).catch(this.error)
           this.loading = false
         }
 
         if (this.tab === 1) {
-          const { torrent } = this.options
-          await engine.addTorrent({
-            torrent,
-            options: this.buildOption()
-          }).catch(this.error)
+          await client.send('addTorrent', this.options.torrent, [], option).catch(this.error)
           this.loading = false
         }
 
