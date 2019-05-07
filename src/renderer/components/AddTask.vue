@@ -142,15 +142,18 @@
         this.loading = true
 
         const option = this.buildOption()
+        let result
         if (this.tab === 0) {
-          await client.multi(this.urisArray.map(uri => ['addUri', [uri], option])).catch(this.error)
+          result = await client.multi(this.urisArray.map(uri => ['addUri', [uri], option])).catch(this.error)
           this.loading = false
         }
 
         if (this.tab === 1) {
-          await client.send('addTorrent', this.options.torrent, [], option).catch(this.error)
+          result = await client.send('addTorrent', this.options.torrent, [], option).catch(this.error)
           this.loading = false
         }
+
+        if (result === undefined) return
 
         this.$emit('close')
         this.options.newTaskShowDownloading && this.$router.push({

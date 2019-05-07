@@ -3,16 +3,17 @@
     <header class="task-header">
       <div class="task-title">已完成</div>
       <div class="task-actions">
+        <v-icon icon="close" @click="clearTasks"></v-icon>
       </div>
     </header>
 
     <div class="task-content">
       <div class="task-list">
-        <div class="task-item" v-for="task of taskList">
+        <div class="task-item" :class="{focus: task.focus_}" v-for="task of taskList" @click="selectTask(task)">
           <div class="i-above">
             <div class="i-name">{{task.name}}</div>
-            <div class="i-actions">
-              <v-icon icon="opened_folder-flat" @click="openFileFolder(task.path)"></v-icon>
+            <div class="i-actions" @click.stop>
+              <v-icon icon="opened-folder-color" @click="openFileFolder(task.path)"></v-icon>
             </div>
           </div>
           <div class="i-bottom">
@@ -34,7 +35,8 @@
     name: 'Stopped',
     data() {
       return {
-        taskList: []
+        taskList: [],
+        selected: []
       }
     },
     methods: {
@@ -48,11 +50,25 @@
           completedLength: bytesToSize(row.completedLength),
           totalLength: bytesToSize(row.totalLength),
           gid: row.gid,
-          dir: row.dir
+          dir: row.dir,
+          focus_: false
         }))
       },
-      openFileFolder(path) {
-        shell.showItemInFolder(path)
+      openFileFolder(filPath) {
+        shell.showItemInFolder(path.normalize(filPath))
+      },
+      selectTask(task) {
+        if (task.focus_) return
+
+        task.focus_ = true
+        this.selected = [task]
+      },
+      async clearTasks() {
+        const {selected} = this
+        if (!selected.length) return this.warn('没有选中的任务')
+
+        await client.multi(selected.map(task => ['removeDownloadResult', task.gid])).catch(this.error)
+        this.getTaskList()
       }
     },
     created() {
