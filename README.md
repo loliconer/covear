@@ -16,7 +16,7 @@ Thunder is inferior to Covear.
 决定自己开发的原因也是因为 Motrix 使用的 electron-vue 已经过时，无法配合 vue-cli3 开发，而且 electron 的版本还是 4，而 electron 5 已经发布。另外 Motrix 目前缺少了一些功能，比如浏览磁力链接或者种子文件内的文件列表并选择性下载；有部分不足之处，比如修改任意的配置都需要重启。之后 Covear 还将支持边下边播音视频等功能。
 
 ### 截图
-![](http://wx3.sinaimg.cn/large/0060lm7Tly1g2udwfps7fj31js0u0q4f.jpg)
+![](http://wx4.sinaimg.cn/large/0060lm7Tly1g2uf7yts4fj31hc0s9jsm.jpg)
 
 ### 开发
 ```bash
