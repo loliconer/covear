@@ -1,5 +1,6 @@
 import {app, protocol, BrowserWindow, ipcMain, dialog} from 'electron'
 import is from 'electron-is'
+import path from 'path'
 import {
   createProtocol,
   installVueDevtools
@@ -15,18 +16,18 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 
 is.windows() && app.setAppUserModelId('dapp.lovue.covear')
 protocol.registerSchemesAsPrivileged([{ scheme: 'app', secure: true }])
-
 let win
 function createWindow() {
   win = new BrowserWindow({
     title: '掩耳',
     width: 1920,
     height: 1080,
+    icon: path.join(__dirname, '../public/img/logo.png'),
     webPreferences: {
       nodeIntegration: true
     }
   })
-  // win.setMenu(null)
+  win.setMenu(null)
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)

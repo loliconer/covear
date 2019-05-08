@@ -1,12 +1,19 @@
 <template>
   <div class="panel-about">
     <div class="app-info">
-      <div class="i-version">Version {{version}}</div>
       <div class="i-engine">
-        <div class="e-version">引擎版本 {{engine.version}}</div>
+        <div class="e-version">Aria2 版本 {{engine.version}}</div>
         <div class="e-features">
-          <div class="e-feature" v-for="f of engine.enabledFeatures">{{f}}</div>
+          <div class="f-title">Aria2 特性</div>
+          <ul class="f-list">
+            <li class="l-item" v-for="f of engine.enabledFeatures">{{f}}</li>
+          </ul>
         </div>
+      </div>
+
+      <div class="i-logo">
+        <img src="/img/logo.svg">
+        <p>版本 {{version}}</p>
       </div>
     </div>
 
@@ -25,10 +32,21 @@
       return {
         version: remote.app.getVersion(),
         engine: {
-          version: '4.3.3',
+          version: '',
           enabledFeatures: []
         }
       }
+    },
+    methods: {
+      async getEngineVersion() {
+        const body = await client.send('getVersion').catch(this.error)
+        if (body === undefined) return
+
+        this.engine = body
+      }
+    },
+    created() {
+      this.getEngineVersion()
     }
   }
 </script>

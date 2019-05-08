@@ -1,6 +1,8 @@
 <template>
   <aside class="cv-aside">
-    <header class="a-head"></header>
+    <header class="a-head">
+      <img class="logo" src="/img/logo.svg">
+    </header>
     <div class="a-menu">
       <div class="m-top">
         <div class="m-item" @click="showAddTaskPanel"><v-icon icon="plus"></v-icon>新建任务</div>
@@ -16,7 +18,7 @@
       </div>
     </div>
 
-    <v-popup v-model="isShowAboutPanel">
+    <v-popup v-model="isShowAboutPanel" no-footer>
       <panel-about></panel-about>
     </v-popup>
 

@@ -133,7 +133,7 @@
   "license": "MIT",
   "main": "background.js",
   "repository": {
-    "url": "https://repo.git",
+    "url": "https://github.com/loliconer/covear.git",
     "type": "git"
   }
 }
