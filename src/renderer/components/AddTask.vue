@@ -9,7 +9,16 @@
         <span class="u-name">{{torrentName}}</span>
         <input type="file" accept=".torrent" @change="selectTorrent">
       </div>
-      <div class="c-parsed span-1-6"></div>
+      <div class="c-parsed span-1-6" v-if="isShowParsed">
+        <div class="p-cell c-head">文件名</div>
+        <div class="p-cell c-head">大小</div>
+        <template v-for="file of parsedMagnetFiles">
+          <div class="p-cell">
+            <v-checkbox :label="file.name" v-model="file.selected_"></v-checkbox>
+          </div>
+          <div class="p-cell">{{file.size}}</div>
+        </template>
+      </div>
       <label class="label">重命名</label>
       <v-input class="out-input" v-model="options.out" placeholder="选填（仅支持单任务）"></v-input>
       <label class="label">下载线程</label>
@@ -50,6 +59,7 @@
   import WebTorrent from 'webtorrent'
   import parseTorrent from 'parse-torrent'
   import {mapState, mapMutations} from 'vuex'
+  import {bytesToSize} from 'src/shared/utils'
 
   const {remote} = electron
   const trClient = new WebTorrent()
@@ -80,7 +90,7 @@
     },
     watch: {
       'options.uris'(val) {
-        this.parseMagnet(val)
+        // this.parseMagnet(val)
       }
     },
     methods: {
@@ -95,12 +105,15 @@
         let links = uris.replace(/\r\n/g, '\n').split('\n')
         const uri = links[0]
         if (links.length === 1 && uri.startsWith('magnet:')) {
-          // const parsed = parseTorrent(uri)
-          // console.log(parsed)
-          console.log(uri)
+          const parsed = parseTorrent(uri)
+          console.log(1)
+          console.log(parsed)
           const result = trClient.add(uri, {}, function (torrent) {
+            console.log(3)
             console.log(torrent)
           })
+          console.log(2)
+          console.log(result)
         } else {
           this.parsedMagnetFiles = []
           this.isShowParsed = false
@@ -125,6 +138,16 @@
       selectTorrent(ev) {
         const file = ev.target.files[0]
         this.torrentName = file.name
+
+        parseTorrent.remote(file, (err, parsed) => {
+          if (err) throw err
+          this.parsedMagnetFiles = parsed.files.map(file => {
+            file.selected_ = false
+            file.size = bytesToSize(file.length)
+            return file
+          })
+          this.isShowParsed = true
+        })
 
         const reader = new FileReader()
         reader.onload = () => {
@@ -180,6 +203,12 @@
         }
 
         if (this.tab === 1) {
+          const indexes = []
+          this.parsedMagnetFiles.forEach((file, index) => {
+            if (file.selected_) indexes.push(index + 1)
+          })
+          if (indexes.length < this.parsedMagnetFiles.length) option['select-file'] = indexes.join(',')
+
           result = await client.send('addTorrent', this.options.torrent, [], option).catch(this.error)
           this.loading = false
         }

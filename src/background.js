@@ -72,6 +72,7 @@ app.on('ready', async () => {
 
   const startEngine = () => {
     try {
+      engine.startTimes = 0
       engine.start()
     } catch (e) {
       dialog.showMessageBox({
@@ -86,6 +87,7 @@ app.on('ready', async () => {
   startEngine()
 
   ipcMain.on('command', (event, command, ...args) => {
+    console.log(command, args)
     switch (command) {
       case 'application:relaunch':
         app.relaunch()
@@ -95,6 +97,9 @@ app.on('ready', async () => {
         configManager.reset()
         app.relaunch()
         app.exit()
+        break
+      case 'aria2:restart':
+        engine.restart()
         break
       case 'aria2:start':
         startEngine()

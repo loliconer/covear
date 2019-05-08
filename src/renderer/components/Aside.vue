@@ -10,7 +10,7 @@
       </div>
 
       <div class="m-bottom">
-        <div class="m-item" @click="restartAria2" v-if="isShowRestartItem"><v-icon icon="reload"></v-icon>重启Aria2</div>
+        <div class="m-item" @click="startAria2" v-if="isShowRestartItem"><v-icon icon="reload"></v-icon>启动Aria2</div>
         <router-link class="m-item" to="/preference/basic"><v-icon icon="setting"></v-icon>设置</router-link>
         <div class="m-item" @click="showAboutPanel"><v-icon icon="question-o"></v-icon>关于</div>
       </div>
@@ -52,12 +52,18 @@
       showAddTaskPanel() {
         this.isShowAddTaskPanel = true
       },
-      restartAria2() {
-        ipcRenderer.send('aria2:start')
+      startAria2() {
+        ipcRenderer.send('command', 'aria2:start')
       }
     },
     created() {
       ipcRenderer.on('aria2:exit', () => {
+        this.isShowRestartItem = true
+      })
+
+      window.addEventListener('aria2:open', () => this.isShowRestartItem = false)
+      window.addEventListener('aria2:error', () => {
+        this.error('Aria2 服务连接失败，请启动服务')
         this.isShowRestartItem = true
       })
     }

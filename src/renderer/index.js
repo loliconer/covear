@@ -15,6 +15,12 @@ function initClient() {
     port: configManager.getSystemConfig('rpc-listen-port'),
     secret: configManager.getSystemConfig('rpc-secret')
   })
+  client.on('open', function () {
+    window.dispatchEvent(new CustomEvent('aria2:open'))
+  })
+  client.on('error', function () {
+    window.dispatchEvent(new CustomEvent('aria2:error'))
+  })
 }
 initClient()
 

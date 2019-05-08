@@ -60,7 +60,7 @@ export default class Client extends EventEmitter {
       const defer = this.defers[id]
 
       if (!defer) return
-      if (error) return defer.reject(error)
+      if (error) return defer.reject(error.message)
 
       defer.resolve(result)
       delete this.defers[id]

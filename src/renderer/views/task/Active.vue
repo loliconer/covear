@@ -34,6 +34,7 @@
             </div>
             <div class="i-speed" v-else>
               <span>{{task.downloadSpeed}}/s</span>
+              <span>{{task.errorMessage}}</span>
             </div>
           </div>
         </div>
@@ -88,21 +89,41 @@
         const body = await client.send('tellActive').catch(this.error)
         if (body === undefined) return
 
-        this.activeTaskList = body.map(row => ({
-          name: path.basename(row.files[0].path),
-          path: row.files[0].path,
-          completedLength: bytesToSize(row.completedLength),
-          totalLength: bytesToSize(row.totalLength),
-          progress: calcProgress(row.totalLength, row.completedLength),
-          downloadSpeed: bytesToSize(row.downloadSpeed),
-          gid: row.gid,
-          connections: row.connections,
-          dir: row.dir,
-          remaining: timeRemaining(row.totalLength, row.completedLength, row.downloadSpeed),
-          seeder: row.seeder === 'true',
-          uploadLength: bytesToSize(row.uploadLength),
-          uploadSpeed: bytesToSize(row.uploadSpeed)
-        }))
+        this.activeTaskList = body.map(row => {
+          const result = {
+            gid: row.gid,
+            status: row.status,
+            totalLength: bytesToSize(row.totalLength),
+            completedLength: bytesToSize(row.completedLength),
+            uploadLength: bytesToSize(row.uploadLength),
+            bitfield: row.bitfield,
+            downloadSpeed: bytesToSize(row.downloadSpeed),
+            uploadSpeed: bytesToSize(row.uploadSpeed),
+            connections: row.connections,
+            errorMessage: row.errorMessage,
+            dir: row.dir,
+            files: row.files,
+            progress: calcProgress(row.totalLength, row.completedLength),
+            remaining: timeRemaining(row.totalLength, row.completedLength, row.downloadSpeed),
+          }
+
+          if (row.bittorrent && row.bittorrent.info) {
+            result.infoHash = row.infoHash
+            result.numSeeders = row.numSeeders
+            result.seeder = row.seeder === 'true'
+            result.bittorrent = {
+              mode: row.bittorrent.mode,
+              info: row.bittorrent.info
+            }
+            result.name = row.bittorrent.info.name
+            result.path = path.resolve(row.dir, row.bittorrent.info.name)
+          } else {
+            result.name = path.basename(row.files[0].path)
+            result.path = row.files[0].path
+          }
+
+          return result
+        })
 
         if (!body.length) return clearTimeout(timer)
 
@@ -112,15 +133,31 @@
         const body = await client.send('tellWaiting', 0, 20).catch(this.error)
         if (body === undefined) return
 
-        this.waitingTaskList = body.map(row => ({
-          name: path.basename(row.files[0].path),
-          path: row.files[0].path,
-          completedLength: bytesToSize(row.completedLength),
-          totalLength: bytesToSize(row.totalLength),
-          progress: calcProgress(row.totalLength, row.completedLength),
-          gid: row.gid,
-          dir: row.dir
-        }))
+        this.waitingTaskList = body.map(row => {
+          const result = {
+            gid: row.gid,
+            status: row.status,
+            totalLength: bytesToSize(row.totalLength),
+            completedLength: bytesToSize(row.completedLength),
+            progress: calcProgress(row.totalLength, row.completedLength),
+            dir: row.dir
+          }
+
+          if (row.bittorrent && row.bittorrent.info) {
+            result.infoHash = row.infoHash
+            result.bittorrent = {
+              mode: row.bittorrent.mode,
+              info: row.bittorrent.info
+            }
+            result.name = row.bittorrent.info.name
+            result.path = path.resolve(row.dir, row.bittorrent.info.name)
+          } else {
+            result.name = path.basename(row.files[0].path)
+            result.path = row.files[0].path
+          }
+
+          return result
+        })
       },
       async pauseTask(task) {
         if (this.isPausing) return this.warn('存在正在暂停的任务，请稍后重试')
