@@ -8,7 +8,7 @@
 
     <div class="task-content">
       <div class="task-list">
-        <div class="task-item" v-for="task of removedTaskList">
+        <div class="task-item" v-for="task of taskList">
           <div class="i-above">
             <div class="i-name">{{task.name}}</div>
             <div class="i-actions">
@@ -20,21 +20,62 @@
           </div>
         </div>
       </div>
-      <div class="no-task" v-if="!removedTaskList.length">当前没有下载任务</div>
+      <div class="no-task" v-if="!taskList.length">当前没有下载任务</div>
     </div>
   </div>
 </template>
 
 <script>
-  import {mapState, mapMutations} from 'vuex'
+  import {shell} from 'electron'
+  import path from 'path'
+  import {bytesToSize} from 'src/shared/utils'
 
   export default {
-    name: 'Stopped',
-    computed: {
-      ...mapState('app', ['removedTaskList'])
+    name: 'Trash',
+    data() {
+      return {
+        taskList: []
+      }
     },
     methods: {
-      ...mapMutations('app', ['deleteRemovedTask'])
+      async getTaskList() {
+        //stopped, complete, removed
+        const body = await client.send('tellStopped', 0, 20).catch(this.error)
+        if (body === undefined) return
+
+        this.taskList = body.filter(row => {
+          return (row.status === 'removed') && ((row.bittorrent && row.bittorrent.info) || !row.bittorrent)
+        }).map(row => {
+          const result = {
+            gid: row.gid,
+            totalLength: bytesToSize(row.totalLength),
+            completedLength: bytesToSize(row.completedLength),
+            dir: row.dir,
+            focus_: false
+          }
+
+          if (row.bittorrent) {
+            result.infoHash = row.infoHash
+            result.bittorrent = {
+              mode: row.bittorrent.mode,
+              info: row.bittorrent.info
+            }
+            result.name = row.bittorrent.info.name
+            result.path = path.resolve(row.dir, row.bittorrent.info.name)
+          } else {
+            result.name = path.basename(row.files[0].path)
+            result.path = row.files[0].path
+          }
+
+          return result
+        })
+      },
+      openFileFolder(filPath) {
+        shell.showItemInFolder(path.normalize(filPath))
+      }
+    },
+    created() {
+      this.getTaskList()
     }
   }
 </script>

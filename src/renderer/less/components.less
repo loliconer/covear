@@ -6,12 +6,12 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: #efdea2;
 
   .a-menu {
     flex: 1;
     padding: var(--unit);
-    color: var(--white);
+    //color: var(--white);
     display: flex;
     flex-direction: column;
 
@@ -35,12 +35,16 @@
         color: var(--error-color);
       }
 
+      .icon-setting {
+        color: var(--main-color);
+      }
+
       &:hover {
-        background-color: rgba(255, 255, 255, 0.15);
+        background-color: rgba(0, 0, 0, 0.15);
       }
 
       &.router-link-active {
-        color: var(--blue-color);
+        background-color: rgba(0, 0, 0, 0.15);
       }
     }
 
@@ -119,6 +123,29 @@
   }
 }
 
+.cv-progress {
+  position: relative;
+  height: 4px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+
+  .layer-1 {
+    background-color: var(--bg-color);
+    width: 100%;
+    height: 100%;
+  }
+
+  .layer-2 {
+    .mixin-transition(@property: width);
+    position: absolute;
+    top: 0;
+    width: 0;
+    height: 100%;
+    background-color: #efdea2;
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+  }
+}
+
 .app-copyright {
   font-size: var(--small-font);
   margin-top: var(--3unit);
@@ -165,7 +192,7 @@
     }
 
     .textarea {
-      height: 60px;
+      height: 80px;
       padding: 4px;
       resize: vertical;
       word-break: break-all;
@@ -190,6 +217,12 @@
     .out-input {
       grid-column: 2 / 4;
       margin-right: var(--3unit);
+    }
+
+    .c-parsing {
+      font-size: var(--tiny-font);
+      text-align: center;
+      color: var(--error-color);
     }
 
     .c-parsed {

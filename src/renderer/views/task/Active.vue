@@ -16,14 +16,15 @@
           <div class="i-above">
             <div class="i-name">{{task.name}}</div>
             <div class="i-actions">
+              <span class="a-tip" v-if="isPausing">正在暂停</span>
               <v-icon icon="pause" @click="pauseTask(task)"></v-icon>
               <v-icon icon="close" size="18" @click="delTask(task)"></v-icon>
             </div>
           </div>
-          <v-progress :width="1000" :height="16" :value="task.progress" decimal></v-progress>
+          <cv-progress :value="task.progress" decimal></cv-progress>
           <div class="i-bottom">
             <div class="i-size">
-              <span>{{task.completedLength}} / {{task.totalLength}}</span>
+              <span>{{task.completedLength}} / {{task.totalLength}} ({{Math.trunc(task.progress * 10000) / 100}}%)</span>
               <span>剩余 {{task.remaining}}s</span>
               <span>连接数 {{task.connections}}</span>
             </div>
@@ -43,13 +44,14 @@
           <div class="i-above">
             <div class="i-name">{{task.name}}</div>
             <div class="i-actions">
+              <v-icon icon="opened-folder-color" @click="openFileFolder(task.path)"></v-icon>
               <v-icon icon="download" @click="unpauseTask(task)"></v-icon>
               <v-icon icon="close" size="18" @click="delTask(task)"></v-icon>
             </div>
           </div>
-          <v-progress :width="1000" :height="16" :value="task.progress" decimal></v-progress>
+          <cv-progress :value="task.progress" decimal></cv-progress>
           <div class="i-bottom">
-            <div class="i-size">{{task.completedLength}} / {{task.totalLength}}</div>
+            <div class="i-size">{{task.completedLength}} / {{task.totalLength}} ({{Math.trunc(task.progress * 10000) / 100}}%)</div>
           </div>
         </div>
       </div>
@@ -60,11 +62,12 @@
 </template>
 
 <script>
-  import {remote} from 'electron'
+  import {remote, shell} from 'electron'
   import path from 'path'
   import {bytesToSize, calcProgress, timeRemaining} from 'src/shared/utils'
   import {mapMutations} from 'vuex'
   import {sleep} from 'lovue/dist/utils.esm'
+  import Progress from 'src/renderer/components/Progress'
 
   let timer
 
@@ -76,6 +79,9 @@
         waitingTaskList: [],
         isPausing: false
       }
+    },
+    components: {
+      [Progress.name]: Progress
     },
     methods: {
       ...mapMutations('app', ['addRemovedTask']),
@@ -89,7 +95,9 @@
         const body = await client.send('tellActive').catch(this.error)
         if (body === undefined) return
 
-        this.activeTaskList = body.map(row => {
+        this.activeTaskList = body.filter(row => {
+          return (row.bittorrent && row.bittorrent.info) || !row.bittorrent
+        }).map(row => {
           const result = {
             gid: row.gid,
             status: row.status,
@@ -107,7 +115,7 @@
             remaining: timeRemaining(row.totalLength, row.completedLength, row.downloadSpeed),
           }
 
-          if (row.bittorrent && row.bittorrent.info) {
+          if (row.bittorrent) {
             result.infoHash = row.infoHash
             result.numSeeders = row.numSeeders
             result.seeder = row.seeder === 'true'
@@ -125,15 +133,18 @@
           return result
         })
 
-        if (!body.length) return clearTimeout(timer)
+        if (!this.activeTaskList.length) return clearTimeout(timer)
 
+        clearTimeout(timer)
         timer = setTimeout(() => this.getActiveTaskList(), 1000)
       },
       async getWaitingTaskList() {
         const body = await client.send('tellWaiting', 0, 20).catch(this.error)
         if (body === undefined) return
 
-        this.waitingTaskList = body.map(row => {
+        this.waitingTaskList = body.filter(row => {
+          return (row.bittorrent && row.bittorrent.info) || !row.bittorrent
+        }).map(row => {
           const result = {
             gid: row.gid,
             status: row.status,
@@ -143,7 +154,7 @@
             dir: row.dir
           }
 
-          if (row.bittorrent && row.bittorrent.info) {
+          if (row.bittorrent) {
             result.infoHash = row.infoHash
             result.bittorrent = {
               mode: row.bittorrent.mode,
@@ -198,6 +209,9 @@
 
               remote.shell.moveItemToTrash(task.path)
               remote.shell.moveItemToTrash(`${task.path}.aria2`)
+              if (task.bittorrent) {
+                remote.shell.moveItemToTrash(path.resolve(task.dir, `${task.infoHash}.torrent`))
+              }
             }
           }
         })
@@ -231,6 +245,19 @@
             this.getWaitingTaskList()
           }
         })
+      },
+      openFileFolder(filPath) {
+        shell.showItemInFolder(path.normalize(filPath))
+      },
+      downloadStartHandler(event) {
+        if (event[0].gid === window.parsingTorrentGid) return
+
+        this.getWaitingTaskList()
+        if (!this.activeTaskList.length) this.getActiveTaskList()
+      },
+      downloadPauseHandler(event) {
+        this.isPausing = false
+        this.getWaitingTaskList()
       }
     },
     async created() {
@@ -239,17 +266,13 @@
       }
       this.getTaskList()
 
-      client.on('onDownloadStart', () => {
-        this.getWaitingTaskList()
-        if (!this.activeTaskList.length) this.getActiveTaskList()
-      })
-      client.on('onDownloadPause', () => {
-        this.isPausing = false
-        this.getWaitingTaskList()
-      })
+      client.on('onDownloadStart', this.downloadStartHandler)
+      client.on('onDownloadPause', this.downloadPauseHandler)
     },
     beforeDestroy() {
       clearTimeout(timer)
+      client.off('onDownloadStart', this.downloadStartHandler)
+      client.off('onDownloadPause', this.downloadPauseHandler)
     }
   }
 </script>

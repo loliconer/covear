@@ -9,7 +9,7 @@
 
     <div class="task-content">
       <div class="task-list">
-        <div class="task-item" :class="{focus: task.focus_}" v-for="task of taskList" @click="selectTask(task)">
+        <div class="task-item" :class="{focus: task.focus_}" v-for="task of taskList" @click="selectTask($event, task)">
           <div class="i-above">
             <div class="i-name">{{task.name}}</div>
             <div class="i-actions" @click.stop>
@@ -41,10 +41,13 @@
     },
     methods: {
       async getTaskList() {
+        //stopped, complete, removed
         const body = await client.send('tellStopped', 0, 20).catch(this.error)
         if (body === undefined) return
 
-        this.taskList = body.map(row => {
+        this.taskList = body.filter(row => {
+          return (row.status !== 'removed') && ((row.bittorrent && row.bittorrent.info) || !row.bittorrent)
+        }).map(row => {
           const result = {
             gid: row.gid,
             totalLength: bytesToSize(row.totalLength),
@@ -53,7 +56,7 @@
             focus_: false
           }
 
-          if (row.bittorrent && row.bittorrent.info) {
+          if (row.bittorrent) {
             result.infoHash = row.infoHash
             result.bittorrent = {
               mode: row.bittorrent.mode,
@@ -72,11 +75,17 @@
       openFileFolder(filPath) {
         shell.showItemInFolder(path.normalize(filPath))
       },
-      selectTask(task) {
+      selectTask(event, task) {
         if (task.focus_) return
 
-        task.focus_ = true
-        this.selected = [task]
+        if (event.ctrlKey) {
+          task.focus_ = true
+          this.selected.push(task)
+        } else {
+          this.taskList.forEach(row => row.focus_ = false)
+          task.focus_ = true
+          this.selected = [task]
+        }
       },
       async clearTasks() {
         const {selected} = this

@@ -2,7 +2,7 @@ import {EventEmitter} from 'events'
 import {existsSync} from 'fs'
 import {resolve, join} from 'path'
 import {execFile} from 'child_process'
-import {app, webContents} from 'electron'
+import {app} from 'electron'
 import is from 'electron-is'
 import logger from './Logger'
 
@@ -12,7 +12,7 @@ export default class Engine extends EventEmitter {
 
     this.systemConfig = options.systemConfig || {}
     this.userConfig = options.userConfig || {}
-    this.maxRestartTimes = options.max || 5
+    this.maxRestartTimes = options.max || 10
     this.startTimes = 0
     this.forceStop = false
     this.aria2 = null

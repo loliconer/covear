@@ -9,6 +9,7 @@
         <span class="u-name">{{torrentName}}</span>
         <input type="file" accept=".torrent" @change="selectTorrent">
       </div>
+      <div class="c-parsing span-1-6" v-if="isLoadingTorrent">正在下载种子文件...</div>
       <div class="c-parsed span-1-6" v-if="isShowParsed">
         <div class="p-cell c-head">文件名</div>
         <div class="p-cell c-head">大小</div>
@@ -56,13 +57,14 @@
 <script>
   import electron from 'electron'
   import is from 'electron-is'
-  import WebTorrent from 'webtorrent'
+  import path from 'path'
+  import fs from 'fs'
   import parseTorrent from 'parse-torrent'
   import {mapState, mapMutations} from 'vuex'
   import {bytesToSize} from 'src/shared/utils'
+  import {sleep} from 'lovue/dist/utils.esm'
 
   const {remote} = electron
-  const trClient = new WebTorrent()
 
   export default {
     name: 'AddTask',
@@ -82,49 +84,84 @@
         torrentName: '',
         loading: false,
         parsedMagnetFiles: [],
-        isShowParsed: false
+        isShowParsed: false,
+        isLoadingTorrent: false
       }
     },
     computed: {
       ...mapState('preference', ['config'])
     },
     watch: {
-      'options.uris'(val) {
-        // this.parseMagnet(val)
-      }
+      'options.uris': 'parseMagnet'
     },
     methods: {
       ...mapMutations('app', ['updateTaskList']),
-      parseMagnet(uris) {
-        if (uris === '') {
-          this.parsedMagnetFiles = []
-          this.isShowParsed = false
-          return
-        }
-
-        let links = uris.replace(/\r\n/g, '\n').split('\n')
-        const uri = links[0]
-        if (links.length === 1 && uri.startsWith('magnet:')) {
-          const parsed = parseTorrent(uri)
-          console.log(1)
-          console.log(parsed)
-          const result = trClient.add(uri, {}, function (torrent) {
-            console.log(3)
-            console.log(torrent)
-          })
-          console.log(2)
-          console.log(result)
-        } else {
-          this.parsedMagnetFiles = []
-          this.isShowParsed = false
-        }
-      },
       initOptions() {
         const configs = [
           'dir', 'split',
           'new-task-show-downloading'
         ]
         for (let key of configs) this.options[key] = this.config[key]
+      },
+      async parseMagnet(uris) {
+        this.isLoadingTorrent = false
+        this.parsedMagnetFiles = []
+        this.isShowParsed = false
+
+        if (uris === '') return
+
+        /*
+        * 先下载种子，但是不下载种子内文件，再解析种子
+        * */
+        let links = uris.replace(/\r\n/g, '\n').split('\n')
+        const uri = links[0]
+        if (links.length !== 1 || !uri.startsWith('magnet:')) return
+
+        this.isLoadingTorrent = true
+        const body = await client.send('addUri', [uri], {
+          'dir': '.',
+          'bt-metadata-only': 'true',
+          'bt-save-metadata': 'true',
+          'follow-torrent': 'false'
+        }).catch(this.error)
+        if (body === undefined) {
+          this.isLoadingTorrent = false
+          return
+        }
+        window.parsingTorrentGid = body
+
+        client.on('onDownloadComplete', this.torrentDownloadedHandler)
+      },
+      async torrentDownloadedHandler(params) {
+        client.off('onDownloadComplete', this.torrentDownloadedHandler)
+
+        const gid = params[0].gid
+        if (gid !== window.parsingTorrentGid) return
+
+        const result = await client.send('tellStatus', gid).catch(this.error)
+        if (result === undefined) {
+          this.isLoadingTorrent = false
+          return
+        }
+        client.send('removeDownloadResult', gid)
+
+        const torrentPath = path.resolve(result.dir, `${result.infoHash}.torrent`)
+        parseTorrent.remote(torrentPath, (err, parsed) => {
+          if (err) throw err
+
+          this.updateParsedFiles(parsed)
+          this.isLoadingTorrent = false
+          this.isShowParsed = true
+
+          electron.remote.shell.moveItemToTrash(torrentPath)
+        })
+      },
+      updateParsedFiles(parsed) {
+        this.parsedMagnetFiles = parsed.files.map(file => {
+          file.selected_ = true
+          file.size = bytesToSize(file.length)
+          return file
+        })
       },
       openDialogDir() {
         remote.dialog.showOpenDialog({
@@ -141,11 +178,8 @@
 
         parseTorrent.remote(file, (err, parsed) => {
           if (err) throw err
-          this.parsedMagnetFiles = parsed.files.map(file => {
-            file.selected_ = false
-            file.size = bytesToSize(file.length)
-            return file
-          })
+
+          this.updateParsedFiles(parsed)
           this.isShowParsed = true
         })
 
@@ -156,6 +190,7 @@
         reader.readAsDataURL(file)
       },
       preSubmit() {
+        if (this.isLoadingTorrent) return
         if (this.tab === 0 && !this.checkCopyright()) return
 
         this.submit()
@@ -198,6 +233,18 @@
         const option = this.buildOption()
         let result
         if (this.tab === 0) {
+          const uris = this.urisArray
+          if (!uris.length) return
+          if (uris[0].startsWith('magnet:')) {
+            option['bt-load-saved-metadata'] = 'true'
+
+            const indexes = []
+            this.parsedMagnetFiles.forEach((file, index) => {
+              if (file.selected_) indexes.push(index + 1)
+            })
+            if (indexes.length < this.parsedMagnetFiles.length) option['select-file'] = indexes.join(',')
+          }
+
           result = await client.multi(this.urisArray.map(uri => ['addUri', [uri], option])).catch(this.error)
           this.loading = false
         }
