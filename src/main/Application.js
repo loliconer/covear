@@ -1,9 +1,8 @@
 import {EventEmitter} from 'events'
-import {app, shell, dialog, ipcMain} from 'electron'
-import is from 'electron-is'
 import {readFile} from 'fs'
 import {extname, basename} from 'path'
-
+import {app, shell, dialog, ipcMain} from 'electron'
+import is from 'electron-is'
 import logger from './core/Logger'
 import ConfigManager from './core/ConfigManager'
 import WindowManager from './ui/WindowManager'

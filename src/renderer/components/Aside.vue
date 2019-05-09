@@ -29,9 +29,9 @@
 </template>
 
 <script>
+  import {ipcRenderer} from 'electron'
   import About from './About'
   import AddTask from './AddTask'
-  import {ipcRenderer} from 'electron'
 
   export default {
     name: 'cv-aside',

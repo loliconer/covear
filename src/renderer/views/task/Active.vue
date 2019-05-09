@@ -62,11 +62,11 @@
 </template>
 
 <script>
-  import {remote, shell} from 'electron'
   import path from 'path'
-  import {bytesToSize, calcProgress, timeRemaining} from 'src/shared/utils'
+  import {remote, shell} from 'electron'
   import {mapMutations} from 'vuex'
   import {sleep} from 'lovue/dist/utils.esm'
+  import {bytesToSize, calcProgress, timeRemaining} from 'src/shared/utils'
   import Progress from 'src/renderer/components/Progress'
 
   let timer

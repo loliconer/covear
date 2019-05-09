@@ -1,6 +1,6 @@
+import path from 'path'
 import {app, protocol, BrowserWindow, ipcMain, dialog} from 'electron'
 import is from 'electron-is'
-import path from 'path'
 import {
   createProtocol,
   installVueDevtools

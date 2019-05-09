@@ -1,8 +1,8 @@
+import {resolve} from 'path'
+import {app} from 'electron'
 import is from 'electron-is'
 import Store from 'electron-store'
 import logger from './Logger'
-import {app} from 'electron'
-import {resolve} from 'path'
 
 export default class ConfigManager {
   constructor() {

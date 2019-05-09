@@ -1,8 +1,8 @@
+import {remote, ipcRenderer} from 'electron'
 import './less/style.less'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import {remote, ipcRenderer} from 'electron'
 import Client from './aria2'
 
 const configManager = remote.getGlobal('configManager')

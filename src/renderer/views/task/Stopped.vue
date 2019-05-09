@@ -27,8 +27,8 @@
 </template>
 
 <script>
-  import {shell} from 'electron'
   import path from 'path'
+  import {shell} from 'electron'
   import {bytesToSize} from 'src/shared/utils'
 
   export default {
