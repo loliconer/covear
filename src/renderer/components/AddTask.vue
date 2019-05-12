@@ -58,7 +58,6 @@
   import path from 'path'
   import electron from 'electron'
   import is from 'electron-is'
-  import path from 'path'
   import parseTorrent from 'parse-torrent'
   import {mapState, mapMutations} from 'vuex'
   import {bytesToSize} from 'src/shared/utils'
