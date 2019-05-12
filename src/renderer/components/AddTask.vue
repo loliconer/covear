@@ -58,6 +58,7 @@
   import path from 'path'
   import electron from 'electron'
   import is from 'electron-is'
+  import path from 'path'
   import parseTorrent from 'parse-torrent'
   import {mapState, mapMutations} from 'vuex'
   import {bytesToSize} from 'src/shared/utils'
@@ -261,7 +262,7 @@
         if (result === undefined) return
 
         this.$emit('close')
-        this.options.newTaskShowDownloading && this.$router.push({
+        this.options['new-task-show-downloading'] && this.$router.push({
           path: '/task/active'
         })
       },
@@ -283,6 +284,10 @@
       const resourceProtocol = ['http://', 'https://', 'ftp://', 'magnet:', 'thunder://']
       const hasResource = resourceProtocol.some(protocol => content.startsWith(protocol))
       hasResource && (this.options.uris = content)
+      const normalResource = ['http://', 'https://', 'ftp://']
+      if (normalResource.some(protocol => content.startsWith(protocol))) {
+        this.options.out = path.basename(content)
+      }
 
       this.initOptions()
     }

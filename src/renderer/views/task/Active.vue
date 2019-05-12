@@ -207,8 +207,9 @@
                */
               if (task.bittorrent && !task.bittorrent.info) return
 
-              remote.shell.moveItemToTrash(task.path)
-              remote.shell.moveItemToTrash(`${task.path}.aria2`)
+              const realPath = path.normalize(task.path)
+              remote.shell.moveItemToTrash(realPath)
+              remote.shell.moveItemToTrash(`${realPath}.aria2`)
               if (task.bittorrent) {
                 remote.shell.moveItemToTrash(path.resolve(task.dir, `${task.infoHash}.torrent`))
               }
