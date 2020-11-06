@@ -1,6 +1,6 @@
 {
   "name": "covear",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Thunder is inferior to Covear.",
   "author": {
     "name": "loliconer",
@@ -12,29 +12,32 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
+  "main": "background.js",
   "dependencies": {
-    "aria2": "^4.0.3",
-    "electron": "^6.0.4",
+    "aria2": "^4.1.0",
     "electron-is": "^3.0.0",
-    "electron-log": "^3.0.7",
-    "electron-store": "^4.0.0"
+    "electron-log": "^4.3.0",
+    "electron-store": "^6.0.1",
+    "electron-updater": "^4.3.5"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.11.0",
-    "@vue/cli-service": "^3.11.0",
-    "babel-eslint": "^10.0.3",
-    "eslint": "^6.2.2",
-    "eslint-plugin-html": "^6.0.0",
-    "eslint-plugin-vue": "^5.2.3",
-    "less": "^3.10.3",
-    "less-loader": "^5.0.0",
-    "lovue": "^3.1.1",
-    "parse-torrent": "^7.0.0",
-    "vue": "^2.6.10",
-    "vue-cli-plugin-electron-builder": "^1.4.0",
-    "vue-router": "^3.1.2",
-    "vue-template-compiler": "^2.6.10",
-    "vuex": "^3.1.1"
+    "@lovue/utils": "^1.0.0",
+    "@vue/cli-plugin-babel": "^4.5.8",
+    "@vue/cli-service": "^4.5.8",
+    "babel-eslint": "^10.1.0",
+    "electron": "^10.1.5",
+    "electron-devtools-installer": "^3.1.0",
+    "eslint": "^7.12.1",
+    "eslint-plugin-vue": "^7.1.0",
+    "less": "^3.12.2",
+    "less-loader": "^7.0.2",
+    "lovue": "^3.1.3",
+    "parse-torrent": "^9.0.0",
+    "vue": "^2.6.12",
+    "vue-cli-plugin-electron-builder": "~2.0.0-rc.5",
+    "vue-router": "^3.4.9",
+    "vue-template-compiler": "^2.6.12",
+    "vuex": "^3.5.1"
   },
   "eslintConfig": {
     "root": true,
@@ -45,9 +48,6 @@
     "extends": [
       "plugin:vue/essential",
       "eslint:recommended"
-    ],
-    "plugins": [
-      "html"
     ],
     "rules": {
       "no-console": "off",
@@ -67,7 +67,6 @@
     "url": "https:/repo/issues"
   },
   "license": "MIT",
-  "main": "background.js",
   "repository": {
     "url": "https://github.com/loliconer/covear.git",
     "type": "git"

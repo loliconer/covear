@@ -39,54 +39,54 @@
 </template>
 
 <script>
-  import electron from 'electron'
-  import {mapState, mapMutations} from 'vuex'
+import electron from 'electron'
+import { mapState, mapMutations } from 'vuex'
 
-  export default {
-    name: 'Basic',
-    data() {
-      return {
-        options: {
-          dir: ''
-        }
+export default {
+  name: 'Basic',
+  data() {
+    return {
+      options: {
+        dir: ''
       }
-    },
-    computed: {
-      ...mapState('preference', ['config'])
-    },
-    methods: {
-      ...mapMutations('preference', ['savePreference']),
-      initOptions() {
-        const configs = [
-          'dir',
-          'split',
-          'continue',
-          'resume-all-when-app-launched',
-          'max-concurrent-downloads',
-          'max-connection-per-server',
-          'task-notification',
-          'auto-check-update',
-          'new-task-show-downloading'
-        ]
-        for (let key of configs) this.options[key] = this.config[key]
-      },
-      openDialogDir() {
-        electron.remote.dialog.showOpenDialog({
-          properties: ['openDirectory']
-        }, filePaths => {
-          if (!filePaths) return
-
-          this.options.dir = filePaths[0]
-        })
-      },
-      save() {
-        this.savePreference(this.options)
-        this.success('保存成功')
-        // electron.ipcRenderer.send('command', 'application:relaunch')
-      }
-    },
-    created() {
-      this.initOptions()
     }
+  },
+  computed: {
+    ...mapState('preference', ['config'])
+  },
+  methods: {
+    ...mapMutations('preference', ['savePreference']),
+    initOptions() {
+      const configs = [
+        'dir',
+        'split',
+        'continue',
+        'resume-all-when-app-launched',
+        'max-concurrent-downloads',
+        'max-connection-per-server',
+        'task-notification',
+        'auto-check-update',
+        'new-task-show-downloading'
+      ]
+      for (let key of configs) this.options[key] = this.config[key]
+    },
+    openDialogDir() {
+      electron.remote.dialog.showOpenDialog({
+        properties: ['openDirectory']
+      }).then(result => {
+        if (!result?.filePaths) return
+
+        this.options.dir = result.filePaths[0]
+      })
+    },
+    save() {
+      this.savePreference(this.options)
+      this.success('保存成功')
+      // electron.ipcRenderer.send('command', 'application:relaunch')
+    }
+  },
+  created() {
+    this.initOptions()
   }
+}
 </script>

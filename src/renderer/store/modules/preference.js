@@ -1,5 +1,5 @@
-import {remote} from 'electron'
-import {userKeys, systemKeys} from 'src/shared/configKeys'
+import { remote } from 'electron'
+import { userKeys, systemKeys } from 'src/shared/configKeys'
 
 const configManager = remote.getGlobal('configManager')
 

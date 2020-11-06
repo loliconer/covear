@@ -1,24 +1,13 @@
 const path = require('path')
 
-class ReplaceVendorsPlugin {
-  constructor() {}
-
-  apply(compiler) {
-    compiler.hooks.compilation.tap(this.constructor.name, compilation => {
-      compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tap(this.constructor.name, htmlPluginData => {
-        htmlPluginData.html = htmlPluginData.html.replace('vue.runtime.js', 'vue.runtime.min.js')
-        return htmlPluginData
-      })
-    })
-  }
-}
-
 module.exports = {
   // publicPath: '.',
   css: {
     loaderOptions: {
       less: {
-        strictMath: 'on'
+        lessOptions: {
+          math: 'parens-division'
+        }
       }
     }
   },
@@ -50,13 +39,11 @@ module.exports = {
       alias: {
         src: path.join(__dirname, 'src')
       }
-    },
-    plugins: process.env.NODE_ENV === 'production' ? [
-      new ReplaceVendorsPlugin()
-    ] : []
+    }
   },
   pluginOptions: {
     electronBuilder: {
+      nodeIntegration: true,
       mainProcessFile: 'src/background.js',
       builderOptions: {
         productName: 'Covear',

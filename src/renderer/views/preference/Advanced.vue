@@ -39,51 +39,51 @@
 </template>
 
 <script>
-  import electron from 'electron'
-  import {mapState, mapMutations} from 'vuex'
+import electron from 'electron'
+import { mapState, mapMutations } from 'vuex'
 
-  export default {
-    name: 'Advanced',
-    data() {
-      return {
-        options: {
-          'use-proxy': false
-        }
+export default {
+  name: 'Advanced',
+  data() {
+    return {
+      options: {
+        'use-proxy': false
       }
-    },
-    computed: {
-      ...mapState('preference', ['config'])
-    },
-    methods: {
-      ...mapMutations('preference', ['savePreference']),
-      initOptions() {
-        const configs = [
-          'hide-app-menu',
-          'use-proxy',
-          'all-proxy'
-        ]
-        for (let key of configs) this.options[key] = this.config[key]
-      },
-      reset() {
-        electron.remote.dialog.showMessageBox({
-          type: 'warning',
-          title: '恢复初始设置',
-          message: '你确定要恢复为初始设置吗？',
-          buttons: ['是', '否'],
-          cancelId: 1
-        }, response => {
-          if (response === 0) {
-            electron.ipcRenderer.send('command', 'application:reset')
-          }
-        })
-      },
-      save() {
-        this.savePreference(this.options, 'advanced')
-        // electron.ipcRenderer.send('command', 'application:relaunch')
-      }
-    },
-    created() {
-      this.initOptions()
     }
+  },
+  computed: {
+    ...mapState('preference', ['config'])
+  },
+  methods: {
+    ...mapMutations('preference', ['savePreference']),
+    initOptions() {
+      const configs = [
+        'hide-app-menu',
+        'use-proxy',
+        'all-proxy'
+      ]
+      for (let key of configs) this.options[key] = this.config[key]
+    },
+    reset() {
+      electron.remote.dialog.showMessageBox({
+        type: 'warning',
+        title: '恢复初始设置',
+        message: '你确定要恢复为初始设置吗？',
+        buttons: ['是', '否'],
+        cancelId: 1
+      }, response => {
+        if (response === 0) {
+          electron.ipcRenderer.send('command', 'application:reset')
+        }
+      })
+    },
+    save() {
+      this.savePreference(this.options, 'advanced')
+      // electron.ipcRenderer.send('command', 'application:relaunch')
+    }
+  },
+  created() {
+    this.initOptions()
   }
+}
 </script>

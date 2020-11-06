@@ -129,8 +129,12 @@
         window.parsingTorrentGid = body
 
         client.on('onDownloadComplete', this.torrentDownloadedHandler)
+        client.on('onDownloadError', () => {
+          this.error('Download Error.')
+        })
       },
       async torrentDownloadedHandler(params) {
+        console.log('torrentDownloadedHandler', params)
         client.off('onDownloadComplete', this.torrentDownloadedHandler)
 
         const gid = params[0].gid
@@ -164,10 +168,10 @@
       openDialogDir() {
         remote.dialog.showOpenDialog({
           properties: ['openDirectory']
-        }, filePaths => {
-          if (!filePaths) return
+        }).then(result => {
+          if (!result?.filePaths) return
 
-          this.options.dir = filePaths[0]
+          this.options.dir = result.filePaths[0]
         })
       },
       selectTorrent(ev) {

@@ -14,7 +14,7 @@
 </template>
 
 <script>
-  export default {
-    name: 'Preference'
-  }
+export default {
+  name: 'Preference'
+}
 </script>

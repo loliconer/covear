@@ -1,4 +1,4 @@
-import {remote, ipcRenderer} from 'electron'
+import { remote, ipcRenderer } from 'electron'
 import './less/style.less'
 import App from './App.vue'
 import router from './router'
@@ -22,6 +22,7 @@ function initClient() {
     window.dispatchEvent(new CustomEvent('aria2:error'))
   })
 }
+
 initClient()
 
 ipcRenderer.on('aria2:restart', () => {

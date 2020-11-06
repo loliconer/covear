@@ -1,10 +1,9 @@
 import path from 'path'
 import {app, protocol, BrowserWindow, ipcMain, dialog} from 'electron'
 import is from 'electron-is'
-import {
-  createProtocol,
-  installVueDevtools
-} from 'vue-cli-plugin-electron-builder/lib'
+import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import { autoUpdater } from 'electron-updater'
 // import debug from 'electron-debug'
 import logger from './main/core/Logger'
 import ConfigManager from './main/core/ConfigManager'
@@ -24,7 +23,8 @@ function createWindow() {
     height: 1080,
     icon: path.join(__dirname, '../public/img/logo.png'),
     webPreferences: {
-      nodeIntegration: true
+      enableRemoteModule: true,
+      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
     }
   })
   win.setMenu(null)
@@ -35,6 +35,7 @@ function createWindow() {
   } else {
     createProtocol('app')
     win.loadURL('app://./index.html')
+    autoUpdater.checkForUpdatesAndNotify()
   }
   win.on('closed', () => win = null)
 }
@@ -42,7 +43,7 @@ function createWindow() {
 app.on('ready', async () => {
   if (isDevelopment && !process.env.IS_TEST) {
     try {
-      await installVueDevtools()
+      await installExtension(VUEJS_DEVTOOLS)
     } catch (e) {
       console.error('Vue Devtools failed to install:', e.toString())
     }
