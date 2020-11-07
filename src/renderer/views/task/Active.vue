@@ -192,7 +192,7 @@ export default {
         buttons: ['是', '否'],
         cancelId: 1,
         checkboxLabel: '同时删除文件'
-      }, async (response, checkboxChecked) => {
+      }).then(async ({ response, checkboxChecked}) => {
         if (response === 0) {
           await client.send('forceRemove', task.gid).catch(this.error)
           await client.send('saveSession')
